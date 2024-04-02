@@ -1,0 +1,19 @@
+.event-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .event-box {
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+  
+  .event-box h2 {
+    margin-top: 0;
+  }
+  
+  .event-box button {
+    margin-top: 10px;
+  }
+  
