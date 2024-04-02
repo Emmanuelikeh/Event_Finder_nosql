@@ -51,3 +51,10 @@
   .signup-button:hover {
     background-color: #1e7e34;
   }
+
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }

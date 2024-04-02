@@ -6,6 +6,8 @@ const SignUpPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
+  const [organizationId, setOrganizationId] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,6 +15,8 @@ const SignUpPage = () => {
     console.log('Username:', username);
     console.log('Email:', email);
     console.log('Password:', password);
+    console.log('Role:', role);
+    console.log('Organization ID:', organizationId);
   };
 
   return (
@@ -53,13 +57,39 @@ const SignUpPage = () => {
               required
             />
           </div>
+          <div className="form-group">
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="">Select your role</option>
+              <option value="user">User</option>
+              <option value="organizer">Organizer</option>
+            </select>
+          </div>
+          {role === 'organizer' && (
+            <div className="form-group">
+              <label htmlFor="organizationId">Organization ID</label>
+              <input
+                type="text"
+                id="organizationId"
+                value={organizationId}
+                onChange={(e) => setOrganizationId(e.target.value)}
+                placeholder="Enter your organization ID"
+                required
+              />
+            </div>
+          )}
           <button type="submit" className="signup-button">
             Sign Up
           </button>
         </form>
         <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
       </div>
     </div>
   );
