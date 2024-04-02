@@ -1,0 +1,26 @@
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    background-color: #f1f1f1;
+    padding: 20px;
+  }
+  
+  .sidebar-menu {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar-menu li {
+    margin-bottom: 10px;
+  }
+  
+  .sidebar-menu li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .sidebar-menu li a:hover,
+  .sidebar-menu li a.active {
+    color: #666;
+  }
