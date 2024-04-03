@@ -1,49 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const StudentsMyEvents = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const events = [
+const MyEvents = () => {
+  const rsvpdEvents = [
     { id: 1, name: 'Music Concert', date: 'April 15, 2024', location: 'Campus Auditorium', capacity: 200 },
     { id: 2, name: 'Sports Day', date: 'May 5, 2024', location: 'Football Field', capacity: 150 },
     { id: 3, name: 'Movie Night', date: 'June 10, 2024', location: 'Student Center', capacity: 100 },
-    { id: 4, name: 'Art Exhibition', date: 'July 20, 2024', location: 'Art Gallery', capacity: 50 },
-    { id: 5, name: 'Tech Symposium', date: 'August 15, 2024', location: 'Engineering Building', capacity: 300 },
-    { id: 6, name: 'Career Fair', date: 'September 25, 2024', location: 'Gymnasium', capacity: 500 },
-    { id: 7, name: 'Food Festival', date: 'October 12, 2024', location: 'Campus Lawn', capacity: 250 },
-    { id: 8, name: 'Science Fair', date: 'November 5, 2024', location: 'Science Building', capacity: 150 },
-    { id: 9, name: 'Dance Performance', date: 'December 18, 2024', location: 'Performing Arts Center', capacity: 400 }
   ];
 
-  const handleRSVP = (eventId) => {
-    // Handle RSVP logic here, e.g., send a request to your backend API
-    console.log(`RSVP for event with ID ${eventId}`);
+  const handleCancelRSVP = (eventId) => {
+    // Handle canceling RSVP logic here
+    console.log(`Cancel RSVP for event with ID ${eventId}`);
   };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const filteredEvents = events.filter(event =>
-    event.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">Available Events</h1>
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search events..."
-          value={searchTerm}
-          onChange={handleSearch}
-          style={{ maxWidth: '300px' }} // Limit width of search input
-        />
-      </div>
+      <h1 className="mb-4">My Events</h1>
       <div className="row">
-        {filteredEvents.map((event, index) => (
+        {rsvpdEvents.map((event, index) => (
           <div key={event.id} className="col-md-4 col-sm-6 mb-4">
             <div className="card h-100">
               <div className="card-body">
@@ -51,8 +25,8 @@ const StudentsMyEvents = () => {
                 <p className="card-text">Date: {event.date}</p>
                 <p className="card-text">Location: {event.location}</p>
                 <p className="card-text">Capacity: {event.capacity}</p>
-                <button className="btn btn-primary btn-block" onClick={() => handleRSVP(event.id)}>
-                  RSVP
+                <button className="btn btn-danger btn-block" onClick={() => handleCancelRSVP(event.id)}>
+                  Cancel RSVP
                 </button>
               </div>
             </div>
@@ -63,4 +37,4 @@ const StudentsMyEvents = () => {
   );
 };
 
-export default StudentsMyEvents;
+export default MyEvents;

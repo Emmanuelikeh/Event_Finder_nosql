@@ -7,18 +7,18 @@ const Sidebar = () => {
     <div className="sidebar">
       <ul className="sidebar-menu">
         <li>
-          <NavLink exact to="/dashboard" activeClassName="active">
-            Dashboard
+          <NavLink exact to="/my-events" activeClassName="active">
+            My Events
           </NavLink>
         </li>
         <li>
-          <NavLink to="/postings" activeClassName="active">
-            Postings
+          <NavLink to="/students-available-events" activeClassName="active">
+            Available Events
           </NavLink>
         </li>
         <li>
-          <NavLink to="/dashboard" activeClassName="active">
-            Dashboard
+          <NavLink to="/students-organizations" activeClassName="active">
+            Organizations
           </NavLink>
         </li>
         {/* Add more links as needed */}
