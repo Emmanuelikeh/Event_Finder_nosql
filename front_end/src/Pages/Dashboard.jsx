@@ -1,12 +1,84 @@
 import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
-import './Dashboard.css';
+import { Link } from 'react-router-dom';
+import { Bar } from 'react-chartjs-2';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'chart.js/auto';
 
-const Dashboard = () => {
+const OrganizationDashboard = () => {
+  // Example data for organization's events and analytics
+  const organizationName = 'Computer Science Club';
+  const totalEvents = 3;
+  const totalAttendees = 120;
+  const events = [
+    { id: 1, name: 'Interview Prep', attendees: 40 },
+    { id: 2, name: 'Hackathon', attendees: 60 },
+    { id: 3, name: 'Resume Review', attendees: 20 }
+  ];
+
+  // Data for the attendance chart
+  const chartData = {
+    labels: events.map(event => event.name),
+    datasets: [
+      {
+        label: 'Attendance',
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+        hoverBackgroundColor: 'rgba(54, 162, 235, 0.8)',
+        hoverBorderColor: 'rgba(54, 162, 235, 1)',
+        data: events.map(event => event.attendees)
+      }
+    ]
+  };
+
   return (
-    <div className="dashboard">
-      <h1>Dashboard</h1>
-      <Outlet />
+    <div className="container mt-4">
+      <h1>{organizationName} Dashboard</h1>
+      <div className="card mt-4">
+        <div className="card-body">
+          <h5 className="card-title">Total Events: {totalEvents}</h5>
+          <p className="card-text">Total Attendees: {totalAttendees}</p>
+          <Link to="/organization/analytics" className="btn btn-primary">
+            View Total Event Analytics
+          </Link>
+        </div>
+      </div>
+      <h2 className="mt-4">Individual Event Analytics</h2>
+      <div className="row mt-4">
+        {events.map(event => (
+          <div key={event.id} className="col-md-4 mb-4">
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">{event.name}</h5>
+                <p className="card-text">Attendees: {event.attendees}</p>
+                <Link to={`/organization/analytics/${event.id}`} className="btn btn-primary">
+                  View Event Analytics
+                </Link>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <h2 className="mt-4">Attendance Chart</h2>
+      <div className="mt-4">
+        <Bar
+          data={chartData}
+          options={{
+            maintainAspectRatio: false,
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }
+              ]
+            }
+          }}
+        />
+      </div>
     </div>
-  )};
-export default Dashboard;
+  );
+};
+
+export default OrganizationDashboard;

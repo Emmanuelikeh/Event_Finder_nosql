@@ -25,7 +25,7 @@ const MyEvents = () => {
                 <p className="card-text">Date: {event.date}</p>
                 <p className="card-text">Location: {event.location}</p>
                 <p className="card-text">Capacity: {event.capacity}</p>
-                <button className="btn btn-danger btn-block" onClick={() => handleCancelRSVP(event.id)}>
+                <button className="btn btn-danger btn-block w-100" onClick={() => handleCancelRSVP(event.id)}>
                   Cancel RSVP
                 </button>
               </div>
