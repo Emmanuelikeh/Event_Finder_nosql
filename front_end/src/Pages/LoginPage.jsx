@@ -3,16 +3,49 @@ import { Link } from 'react-router-dom';
 import './LoginPage.css';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle login logic here
-    console.log('Username:', username);
+    console.log('Username:', email);
     console.log('Password:', password);
     console.log('Role:', role);
+
+    // Clear the form
+    setEmail('');
+    setPassword('');
+    setRole('');
+
+    // try and log in the user from the api , if it is s
+    fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        role,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        // Save the token in local storage
+        localStorage.setItem('token', data.token);
+        // Redirect the user to the dashboard
+        if (role === 'organizer') {
+          window.location.href = '/organization-dashboard';
+        } else {
+          window.location.href = '/students-available-events';
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -21,13 +54,13 @@ const LoginPage = () => {
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Email</label>
             <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
               required
             />
           </div>

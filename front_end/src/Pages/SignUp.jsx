@@ -6,17 +6,57 @@ const SignUpPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
-  const [organizationId, setOrganizationId] = useState('');
+  const [isorganizer, setisorganizer] = useState('');
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     // Handle sign up logic here
     console.log('Username:', username);
     console.log('Email:', email);
     console.log('Password:', password);
-    console.log('Role:', role);
-    console.log('Organization ID:', organizationId);
+    console.log('isorganizer:', isorganizer);
+
+    if (isorganizer === 'organizer'){
+       setisorganizer(true);
+
+    }else{
+        setisorganizer(false);
+    }
+
+  
+    // Clear the form
+    setUsername('');
+    setEmail('');
+    setPassword('');
+    setisorganizer('');
+  
+
+    // try and sign up the user from the api, if it is successful, redirect to the login page, else show an error message
+    fetch('http://localhost:5001/api/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        isorganizer,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        console.log('User created successfully');
+        // Redirect the user to the login page
+        window.location.href = '/login';
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log('Error creating user');
+      });
   };
 
   return (
@@ -60,9 +100,9 @@ const SignUpPage = () => {
           <div className="form-group">
             <label htmlFor="role">Role</label>
             <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
+              id="isOrganizer"
+              value={isorganizer}
+              onChange={(e) => setisorganizer(e.target.value)}
               required
             >
               <option value="">Select your role</option>
@@ -70,19 +110,6 @@ const SignUpPage = () => {
               <option value="organizer">Organizer</option>
             </select>
           </div>
-          {role === 'organizer' && (
-            <div className="form-group">
-              <label htmlFor="organizationId">Organization ID</label>
-              <input
-                type="text"
-                id="organizationId"
-                value={organizationId}
-                onChange={(e) => setOrganizationId(e.target.value)}
-                placeholder="Enter your organization ID"
-                required
-              />
-            </div>
-          )}
           <button type="submit" className="signup-button">
             Sign Up
           </button>
