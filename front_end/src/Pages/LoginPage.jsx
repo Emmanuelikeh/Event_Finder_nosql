@@ -19,8 +19,15 @@ const LoginPage = () => {
     setPassword('');
     setRole('');
 
+    if (role === "organizer") {
+      setRole('true');
+    }
+    else {
+      setRole('false');
+    }
+
     // try and log in the user from the api , if it is s
-    fetch('http://localhost:5000/api/login', {
+    fetch('http://localhost:5001/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +51,8 @@ const LoginPage = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log('Error logging in')
+        console.log(err.message);
       });
   };
 

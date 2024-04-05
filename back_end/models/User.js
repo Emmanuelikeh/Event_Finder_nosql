@@ -23,6 +23,7 @@ class User {
 
   static getUserByCredentials(email, password, isOrganizer) {
     const query = `SELECT * FROM users WHERE email = ?`;
+    isOrganizer = isOrganizer === 'organizer' ? 1 : 0;
     return new Promise((resolve, reject) => {
       dbConnection.query(query, [email])
         .then(async ([result]) => {
@@ -37,7 +38,12 @@ class User {
 
             if (!isMatch) {
               reject('Incorrect password');
-            } else {
+            }
+            if (user.ISORGANIZER !== isOrganizer) {
+              reject('User is not an organizer');
+            } 
+            else {
+              console.log(user)
               resolve(this.getJson(user));
             }
           }
@@ -70,7 +76,7 @@ class User {
 
   static signup(username, email, password, isOrganizer) {
     // convert isOrganizer to boolean
-    isOrganizer = isOrganizer === 'true';
+    isOrganizer = isOrganizer === 'organizer' ? 1 : 0;
     if (!isEmail(email)) return Promise.reject('Invalid email');
 
     // hash the password
@@ -102,6 +108,7 @@ class User {
       "email": user.EMAIL
     }
   }
+  
 }
 
 module.exports = User;

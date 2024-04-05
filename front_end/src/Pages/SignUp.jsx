@@ -17,14 +17,6 @@ const SignUpPage = () => {
     console.log('Email:', email);
     console.log('Password:', password);
     console.log('isorganizer:', isorganizer);
-
-    if (isorganizer === 'organizer'){
-       setisorganizer(true);
-
-    }else{
-        setisorganizer(false);
-    }
-
   
     // Clear the form
     setUsername('');
