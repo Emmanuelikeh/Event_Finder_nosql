@@ -35,14 +35,19 @@ class User {
 
             const isMatch = await this.comparePassword(password, user.PASSWORD);
             console.log(isMatch);
+            console.log(user.isorganizer);
+            console.log(isOrganizer);
 
             if (!isMatch) {
+              console.log('Incorrect password');
               reject('Incorrect password');
             }
-            if (user.ISORGANIZER !== isOrganizer) {
+            if (user.isorganizer !== isOrganizer) {
+              console.log('User is not an organizer');
               reject('User is not an organizer');
             } 
             else {
+              console.log("User is valid")
               console.log(user)
               resolve(this.getJson(user));
             }
@@ -108,7 +113,7 @@ class User {
       "email": user.EMAIL
     }
   }
-  
+
 }
 
 module.exports = User;

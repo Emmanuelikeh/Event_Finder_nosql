@@ -1,32 +1,25 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import './LoginPage.css';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
+  const [isorganizer, setRole] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle login logic here
     console.log('Username:', email);
     console.log('Password:', password);
-    console.log('Role:', role);
+    console.log('Role:', isorganizer);
 
     // Clear the form
     setEmail('');
     setPassword('');
     setRole('');
 
-    if (role === "organizer") {
-      setRole('true');
-    }
-    else {
-      setRole('false');
-    }
-
-    // try and log in the user from the api , if it is s
     fetch('http://localhost:5001/api/login', {
       method: 'POST',
       headers: {
@@ -35,25 +28,41 @@ const LoginPage = () => {
       body: JSON.stringify({
         email,
         password,
-        role,
+        isorganizer,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        // Save the token in local storage
-        localStorage.setItem('token', data.token);
-        // Redirect the user to the dashboard
-        if (role === 'organizer') {
-          window.location.href = '/organization-dashboard';
+        if (!data.error) {
+          // Login was successful
+          console.log(data);
+          // Save the token in local storage
+          localStorage.setItem('token', data.token);
+          // Redirect the user to the dashboard
+          if (isorganizer === 'organizer') {
+            window.location.href = '/organization-dashboard';
+          } else {
+            window.location.href = '/students-available-events';
+          }
         } else {
-          window.location.href = '/students-available-events';
+          // Login failed
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.message,
+          });
+          console.log('Error logging in');
+          console.log(data.message); // Display the error message from the API
+          // Show a dialog or an error message to the user
         }
       })
       .catch((err) => {
-        console.log('Error logging in')
+        // Handle network errors or other exceptions
+        console.log('Error logging in');
         console.log(err.message);
+        // Show a dialog or an error message to the user
       });
+
   };
 
   return (
@@ -87,7 +96,7 @@ const LoginPage = () => {
             <label htmlFor="role">Role</label>
             <select
               id="role"
-              value={role}
+              value={isorganizer}
               onChange={(e) => setRole(e.target.value)}
               required
             >
