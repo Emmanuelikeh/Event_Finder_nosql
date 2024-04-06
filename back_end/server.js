@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const userRoutes = require('./routes/UserRoutes');
+const eventRoutes = require('./routes/EventRoutes');
 const app = express();
 
 
@@ -10,6 +11,7 @@ app.use(cors());
 
 
 app.use('/api', userRoutes);
+app.use('/api/events', eventRoutes);
 
 
 const server = require('http').createServer(app);

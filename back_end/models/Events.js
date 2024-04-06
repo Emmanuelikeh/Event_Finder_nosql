@@ -2,85 +2,68 @@ const dbConnection = require('../config/dbConnection');
 
 
 class Events {
+    // get all events 
     static async getAllEvents() {
         const query = `SELECT * FROM events`;
-        return new Promise((resolve, reject) => {
-            dbConnection.query(query)
-                .then(([result]) => {
-                    resolve(result);
-                })
-                .catch((err) => {
-                    console.log(err.message);
-                    reject(err);
-                });
-        });
+        try {
+            const { rows } = await dbConnection.query(query);
+            return rows;
+        } catch (error) {
+            throw error;
+        }
     }
 
-
-    // get events by organizer -> user_id
-
-    static async getEventsByOrganizer(user_id) {
-        const query = `SELECT * FROM events WHERE user_id = ?`;
-        return new Promise((resolve, reject) => {
-            dbConnection.query(query, [user_id])
-                .then(([result]) => {
-                    resolve(result);
-                })
-                .catch((err) => {
-                    console.log(err.message);
-                    reject(err);
-                });
-        });
+    // get events by organizer
+    static async getEventsByOrganizer(userID) {
+        const query = `SELECT * FROM events WHERE organizerid = $1`;
+        try {
+            const { rows } = await dbConnection.query(query, [userID]);
+            return rows;
+        } catch (error) {
+            throw error;
+        }
     }
 
-    // get events by name -> event_name, start with the name
-
-    static async getEventsByName(event_name) {
-        const query = `SELECT * FROM events WHERE event_name LIKE ?`;
-        return new Promise((resolve, reject) => {
-            dbConnection.query(query, [event_name + '%'])
-                .then(([result]) => {
-                    resolve(result);
-                })
-                .catch((err) => {
-                    console.log(err.message);
-                    reject(err);
-                });
-        });
-    }
-
-    // get events by date -> date
-
+    // get events by date
     static async getEventsByDate(date) {
-        const query = `SELECT * FROM events WHERE date = ?`;
-        return new Promise((resolve, reject) => {
-            dbConnection.query(query, [date])
-                .then(([result]) => {
-                    resolve(result);
-                })
-                .catch((err) => {
-                    console.log(err.message);
-                    reject(err);
-                });
-        });
+        const query = `SELECT * FROM events WHERE startdatetime = $1`;
+        try {
+            const { rows } = await dbConnection.query(query, [date]);
+            return rows;
+        } catch (error) {
+            throw error;
+        }
     }
 
+    // get events by name
+    static async getEventsByName(eventName) {
+        const query = `SELECT * FROM events WHERE eventname = $1`;
+        try {
+            const { rows } = await dbConnection.query(query, [eventName]);
+            return rows;
+        } catch (error) {
+            throw error;
+        }
+    }
 
-    // get events by name -> event_name, start with the name and belongs to a specific organizer
+    // create an event  
+    static async createEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID) {
+        const query = `INSERT INTO events (eventname, eventdescription, startdatetime, enddatetime, venueid, organizerid) VALUES ($1, $2, $3, $4, $5, $6)`;
+        try {
+            await dbConnection.query(query, [eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID]);
+        } catch (error) {
+            throw error;
+        }
+    }
 
-    static async getEventsByNameAndOrganizer(event_name, user_id) {
-        const query = `SELECT * FROM events WHERE event_name LIKE ? AND user_id = ?`;
-        return new Promise((resolve, reject) => {
-            dbConnection.query(query, [event_name + '%', user_id])
-                .then(([result]) => {
-                    resolve(result);
-                })
-                .catch((err) => {
-                    console.log(err.message);
-                    reject(err);
-                });
-        });
-
+    // update an event 
+    static async updateEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID) {
+        const query = `UPDATE events SET eventname = $1, eventdescription = $2, startdatetime = $3, enddatetime = $4, venueid = $5, organizerid = $6 WHERE eventid = $7`;
+        try {
+            await dbConnection.query(query, [eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID, eventID]);
+        } catch (error) {
+            throw error;
+        }
     }
 
 }
