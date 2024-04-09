@@ -37,9 +37,11 @@ router.get('/', auth, async (req, res) => {
 })
 
 // get events by organizer
-router.get('/:userID', auth, async (req, res) => {
+router.get('/getevents/:userID', auth, async (req, res) => {
     const OrganizerID = req.params.userID;
+    console.log("Organizer ID is", OrganizerID)
     try {
+        console.log("Organizer ID is", OrganizerID)
         const events = await Event.getEventsByOrganizer(OrganizerID);
         res.json(events);   
     } catch (error) {

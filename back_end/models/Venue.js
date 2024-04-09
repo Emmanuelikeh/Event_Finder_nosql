@@ -5,7 +5,6 @@ class Venue {
         const query = `SELECT * FROM venues`;
         try {
             const rows  = await dbConnection.query(query);
-            console.log(rows[0]);
             return rows[0];
         } catch (error) {
             throw error;

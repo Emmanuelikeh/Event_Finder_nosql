@@ -25,14 +25,33 @@ class Events {
 
     // get events by organizer
     static async getEventsByOrganizer(OrganizerID) {
-        const query = `SELECT * FROM events WHERE organizerid = $1`;
+        console.log("Organizer ID is, UNO" )
+        const query = `
+          SELECT
+            e.EventID,
+            e.EventName,
+            e.EventDescription,
+            e.EventDate,
+            e.StartTime,
+            e.EndTime,
+            v.VenueName,
+            v.Location,
+            v.Capacity
+          FROM
+            Events e
+          JOIN
+            Venues v ON e.VenueID = v.VenueID
+          WHERE
+            e.OrganizerID = ${OrganizerID}
+        `;
         try {
-            const rows = await dbConnection.query(query, [OrganizerID]);
-            return rows[0];
+          const rows = await dbConnection.query(query);
+          console.log(rows);
+          return rows [0];
         } catch (error) {
-            throw error;
+          throw error;
         }
-    }
+      }
 
     // get event like name
     static async getEventsByName(EventName) {
