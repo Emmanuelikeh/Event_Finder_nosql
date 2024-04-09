@@ -2,30 +2,38 @@ const dbConnection = require('../config/dbConnection');
 
 
 class Events {
-
-
-    // EventName
-    // EventDescription
-    // EventDate
-    // StartTime
-    // EndTime
-    // VenueID (Foreign Key referencing Venues table)
-    // OrganizerID (Foreign Key referencing Users table)
-
-    // get all events
     static async getAllEvents() {
-        const query = `SELECT * FROM events`;
+        const query = `
+          SELECT
+            e.EventID,
+            e.EventName,
+            e.EventDescription,
+            e.EventDate,
+            e.StartTime,
+            e.EndTime,
+            u.Username AS Organizer,
+            v.VenueName,
+            v.Location,
+            v.Capacity
+          FROM
+            Events e
+          JOIN
+            Users u ON e.OrganizerID = u.UserID
+          JOIN
+            Venues v ON e.VenueID = v.VenueID
+        `;
+
         try {
             const rows = await dbConnection.query(query);
+            console.log(rows);
             return rows[0];
         } catch (error) {
             throw error;
         }
     }
-
     // get events by organizer
     static async getEventsByOrganizer(OrganizerID) {
-        console.log("Organizer ID is, UNO" )
+        console.log("Organizer ID is, UNO")
         const query = `
           SELECT
             e.EventID,
@@ -45,13 +53,13 @@ class Events {
             e.OrganizerID = ${OrganizerID}
         `;
         try {
-          const rows = await dbConnection.query(query);
-          console.log(rows);
-          return rows [0];
+            const rows = await dbConnection.query(query);
+            console.log(rows);
+            return rows[0];
         } catch (error) {
-          throw error;
+            throw error;
         }
-      }
+    }
 
     // get event like name
     static async getEventsByName(EventName) {
@@ -78,7 +86,7 @@ class Events {
 
     // create an event
     static async createEvent(EventName, EventDescription, EventDate, StartTime, EndTime, VenueID, OrganizerID) {
-        console.log("Event details is" ,EventName, EventDescription, EventDate, StartTime, EndTime, VenueID, OrganizerID);
+        console.log("Event details is", EventName, EventDescription, EventDate, StartTime, EndTime, VenueID, OrganizerID);
         const query = `INSERT INTO events (eventname, eventdescription, eventdate, starttime, endtime, venueid, organizerid) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         try {
             const result = await dbConnection.query(query, [EventName, EventDescription, EventDate, StartTime, EndTime, VenueID, OrganizerID]);

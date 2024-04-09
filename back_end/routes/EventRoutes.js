@@ -27,8 +27,9 @@ router.post('/create', auth, async (req, res) => {
 
 
 // get all events
-router.get('/', auth, async (req, res) => {
+router.get('/getevents', auth, async (req, res) => {
     try {
+        console.log("Get all events");
         const events = await Event.getAllEvents();
         res.json(events);
     } catch (error) {
