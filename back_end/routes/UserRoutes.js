@@ -7,7 +7,8 @@ router.post('/login', async (req, res) => {
     try {
         const user = await User.login(email, password, isorganizer);
         const token  = User.generateToken(user);
-        res.json({ token });
+        // pass the user and the token to the client
+        res.json({ user, token });
     } catch (err) {
         console.log(`Error in login: ${err}`);
         res.status(401).json({ error: err}); 

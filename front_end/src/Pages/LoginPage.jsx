@@ -38,6 +38,8 @@ const LoginPage = () => {
           console.log(data);
           // Save the token in local storage
           localStorage.setItem('token', data.token);
+          // pass the user 
+          localStorage.setItem('user', JSON.stringify(data.user));
           // Redirect the user to the dashboard
           if (isorganizer === 'organizer') {
             window.location.href = '/organization-dashboard';

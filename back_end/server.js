@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const userRoutes = require('./routes/UserRoutes');
 const eventRoutes = require('./routes/EventRoutes');
+const venueRoutes = require('./routes/VenueRoutes');
 const app = express();
 
 
@@ -12,6 +13,9 @@ app.use(cors());
 
 app.use('/api', userRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/venues', venueRoutes);
+
+
 
 
 const server = require('http').createServer(app);

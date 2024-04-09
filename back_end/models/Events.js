@@ -2,70 +2,75 @@ const dbConnection = require('../config/dbConnection');
 
 
 class Events {
-    // get all events 
+
+
+    // EventName
+    // EventDescription
+    // EventDate
+    // StartTime
+    // EndTime
+    // VenueID (Foreign Key referencing Venues table)
+    // OrganizerID (Foreign Key referencing Users table)
+
+    // get all events
     static async getAllEvents() {
         const query = `SELECT * FROM events`;
         try {
-            const { rows } = await dbConnection.query(query);
-            return rows;
+            const rows = await dbConnection.query(query);
+            return rows[0];
         } catch (error) {
             throw error;
         }
     }
 
     // get events by organizer
-    static async getEventsByOrganizer(userID) {
+    static async getEventsByOrganizer(OrganizerID) {
         const query = `SELECT * FROM events WHERE organizerid = $1`;
         try {
-            const { rows } = await dbConnection.query(query, [userID]);
-            return rows;
+            const rows = await dbConnection.query(query, [OrganizerID]);
+            return rows[0];
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // get event like name
+    static async getEventsByName(EventName) {
+        const query = `SELECT * FROM events WHERE eventname LIKE $1`;
+        try {
+            const rows = await dbConnection.query(query, ['%' + EventName + '%']);
+            return rows[0];
         } catch (error) {
             throw error;
         }
     }
 
     // get events by date
-    static async getEventsByDate(date) {
-        const query = `SELECT * FROM events WHERE startdatetime = $1`;
+    static async getEventsByDate(EventDate) {
+        const query = `SELECT * FROM events WHERE eventdate = $1`;
         try {
-            const { rows } = await dbConnection.query(query, [date]);
-            return rows;
+            const rows = await dbConnection.query(query, [EventDate]);
+            return rows[0];
         } catch (error) {
             throw error;
         }
     }
 
-    // get events by name
-    static async getEventsByName(eventName) {
-        const query = `SELECT * FROM events WHERE eventname = $1`;
+
+    // create an event
+    static async createEvent(EventName, EventDescription, EventDate, StartTime, EndTime, VenueID, OrganizerID) {
+        console.log("Event details is" ,EventName, EventDescription, EventDate, StartTime, EndTime, VenueID, OrganizerID);
+        const query = `INSERT INTO events (eventname, eventdescription, eventdate, starttime, endtime, venueid, organizerid) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         try {
-            const { rows } = await dbConnection.query(query, [eventName]);
-            return rows;
+            const result = await dbConnection.query(query, [EventName, EventDescription, EventDate, StartTime, EndTime, VenueID, OrganizerID]);
+            const eventId = await result[0].insertId;
+            console.log(eventId, "eventid")
+            return eventId;
         } catch (error) {
+            console.log(error, "shit failed")
             throw error;
         }
     }
-
-    // create an event  
-    static async createEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID) {
-        const query = `INSERT INTO events (eventname, eventdescription, startdatetime, enddatetime, venueid, organizerid) VALUES ($1, $2, $3, $4, $5, $6)`;
-        try {
-            await dbConnection.query(query, [eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID]);
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    // update an event 
-    static async updateEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID) {
-        const query = `UPDATE events SET eventname = $1, eventdescription = $2, startdatetime = $3, enddatetime = $4, venueid = $5, organizerid = $6 WHERE eventid = $7`;
-        try {
-            await dbConnection.query(query, [eventName, eventDescription, startDateTime, endDateTime, venueID, organizerID, eventID]);
-        } catch (error) {
-            throw error;
-        }
-    }
-
 }
 
 module.exports = Events;
