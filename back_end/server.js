@@ -3,6 +3,8 @@ const cors = require('cors');
 const userRoutes = require('./routes/UserRoutes');
 const eventRoutes = require('./routes/EventRoutes');
 const venueRoutes = require('./routes/VenueRoutes');
+const ticketRoutes = require('./routes/TicketRoutes');
+const bookingRoutes = require('./routes/BookingsRoutes');
 const app = express();
 
 
@@ -14,6 +16,9 @@ app.use(cors());
 app.use('/api', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/venues', venueRoutes);
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/bookings', bookingRoutes);
+
 
 
 

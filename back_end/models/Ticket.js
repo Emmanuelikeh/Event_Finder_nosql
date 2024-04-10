@@ -14,7 +14,7 @@ class Tickets {
     }
 
     static async getTicketsByEvent(EventID) {
-        const query = `SELECT * FROM tickets WHERE eventid = $1`;
+        const query = `SELECT * FROM tickets WHERE eventid = ?`;
         try {
             const rows = await dbConnection.query(query, [EventID]);
             return rows[0];

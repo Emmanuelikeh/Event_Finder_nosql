@@ -30,7 +30,7 @@ router.post('/create', auth, async (req, res) => {
 router.get('/getevents', auth, async (req, res) => {
     try {
         console.log("Get all events");
-        const events = await Event.getAllEvents();
+        const events = await Event.getAvailableEvents();
         res.json(events);
     } catch (error) {
         res.status(500).json({ error });
@@ -67,6 +67,18 @@ router.get('/date/:date', auth, async (req, res) => {
     const date = req.params.EventDate;
     try {
         const events = await Event.getEventsByDate(date);
+        res.json(events);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
+// get registerd events by user
+router.get('/registered/:userID', auth, async (req, res) => {
+    const userID = req.params.userID;
+    console.log("User ID is", userID);
+    try {
+        const events = await Event.getAllRegisteredEvents(userID);
         res.json(events);
     } catch (error) {
         res.status(500).json({ error });

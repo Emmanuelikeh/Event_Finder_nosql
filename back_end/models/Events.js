@@ -31,6 +31,70 @@ class Events {
             throw error;
         }
     }
+
+    static async getAvailableEvents() {
+        // similar to the above function, but only returns events that have not yet occurred i.e does not pass the current date and time
+        const query = `
+          SELECT
+            e.EventID,
+            e.EventName,
+            e.EventDescription,
+            e.EventDate,
+            e.StartTime,
+            e.EndTime,
+            u.Username AS Organizer,
+            v.VenueName,
+            v.Location,
+            v.Capacity
+          FROM
+            Events e
+          JOIN
+            Users u ON e.OrganizerID = u.UserID
+          JOIN
+            Venues v ON e.VenueID = v.VenueID
+          WHERE
+            e.EventDate >= CURDATE()
+        `;
+
+        try {
+            const rows = await dbConnection.query(query);
+            console.log(rows);
+            return rows[0];
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // get all registered events
+    static async getAllRegisteredEvents(UserID) {
+        const query = `
+        SELECT 
+    e.EventName,
+    e.EventDescription,
+    e.EventDate,
+    e.StartTime,
+    e.EndTime,
+    v.VenueName,
+    v.Location,
+    v.Capacity
+FROM
+    Events e
+    JOIN Venues v ON e.VenueID = v.VenueID
+    JOIN Bookings b ON e.EventID = b.EventID
+    JOIN Users u ON b.AttendeeID = u.UserID
+WHERE
+    u.UserID = 3;
+        `
+        try {
+            const rows = await dbConnection.query(query);
+            console.log(rows[0]);
+            return rows[0];
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
     // get events by organizer
     static async getEventsByOrganizer(OrganizerID) {
         console.log("Organizer ID is, UNO")
