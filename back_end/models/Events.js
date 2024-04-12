@@ -32,28 +32,29 @@ class Events {
         }
     }
 
-    static async getAvailableEvents() {
+    static async getAvailableEvents(userID) {
         // similar to the above function, but only returns events that have not yet occurred i.e does not pass the current date and time
+        console.log("User ID is", userID)
         const query = `
           SELECT
-            e.EventID,
-            e.EventName,
-            e.EventDescription,
-            e.EventDate,
-            e.StartTime,
-            e.EndTime,
-            u.Username AS Organizer,
-            v.VenueName,
-            v.Location,
-            v.Capacity
-          FROM
-            Events e
-          JOIN
-            Users u ON e.OrganizerID = u.UserID
-          JOIN
-            Venues v ON e.VenueID = v.VenueID
-          WHERE
-            e.EventDate >= CURDATE()
+          e.EventID,
+          e.EventName,
+          e.EventDescription,
+          e.EventDate,
+          e.StartTime,
+          e.EndTime,
+          u.Username AS Organizer,
+          v.VenueName,
+          v.Location,
+          v.Capacity
+      FROM
+          Events e
+          JOIN Users u ON e.OrganizerID = u.UserID
+          JOIN Venues v ON e.VenueID = v.VenueID
+          LEFT JOIN Bookings b ON e.EventID = b.EventID AND b.AttendeeID = ${userID}
+        WHERE
+          e.EventDate >= CURDATE()
+          AND b.BookingID IS NULL
         `;
 
         try {
@@ -74,6 +75,7 @@ class Events {
     e.EventDate,
     e.StartTime,
     e.EndTime,
+    b.BookingID,
     v.VenueName,
     v.Location,
     v.Capacity
@@ -87,10 +89,44 @@ WHERE
         `
         try {
             const rows = await dbConnection.query(query);
-            console.log(rows[0]);
             return rows[0];
         }
         catch (error) {
+            throw error;
+        }
+    }
+
+    // get all events and checking if the user, creating a  new value is registered 
+
+    static async getEventsAndCheckIfRegistered(UserID) {
+        console.log("User ID is", UserID) 
+        const query = `
+        SELECT
+    e.EventID,
+    e.EventName,
+    e.EventDescription,
+    e.EventDate,
+    e.StartTime,
+    e.EndTime,
+    e.VenueID,
+    v.Location,
+    e.OrganizerID,
+    CASE
+        WHEN b.BookingID IS NOT NULL THEN 1
+        ELSE 0
+    END AS isRegistered
+FROM
+    Events e
+    LEFT JOIN Bookings b ON e.EventID = b.EventID AND b.AttendeeID = ${UserID}
+    LEFT JOIN Venues v ON e.VenueID = v.VenueID
+        `
+        try {
+            const rows = await dbConnection.query(query);
+            console.log(rows);
+            return rows[0];
+        }
+        catch (error) {
+            console.log(error)
             throw error;
         }
     }
@@ -162,6 +198,7 @@ WHERE
             throw error;
         }
     }
+
 }
 
 module.exports = Events;

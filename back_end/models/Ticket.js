@@ -5,7 +5,7 @@ class Tickets {
     static async getAllTickets() {
         const query = `SELECT * FROM tickets`;
         try {
-            const rows = await dbConnection.query(query);
+            const rows = await dbConnection.query(query); 
             return rows[0];
         } catch (error) {
             throw error;

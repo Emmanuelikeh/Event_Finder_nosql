@@ -14,6 +14,7 @@ import BookingPage from './Pages/BookingPage';
 import CreateEventForm from './Pages/CreateEvent';
 import OrganizationDashboard from './Pages/Dashboard';
 import EventAnalytics from './Pages/EventAnalytics';
+import OrganizationDetailPage from './Pages/OrganizationDetailsPage';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/organization-dashboard" element={<Layout><OrganizationDashboard /></Layout>} />
         <Route path="/our-event/event-analytics" element={<Layout><EventAnalytics /></Layout>} />
         <Route path="/booking" element={<BookingPage />} />
+        <Route path="/organization-detail" element={<OrganizationDetailPage />} />
       </Routes>
     </BrowserRouter>
   );

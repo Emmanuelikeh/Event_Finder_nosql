@@ -30,17 +30,32 @@ const MyEvents = () => {
         console.error('Error fetching RSVP events:', error);
       }
     }
-    fetchRsvpdEvents();
+    fetchRsvpdEvents(); 
   }, []);
 
 
 
-
-
-
-  const handleCancelRSVP = (eventId) => {
+  const  handleCancelRSVP = async (eventId) => {
     // Handle canceling RSVP logic here
     console.log(`Cancel RSVP for event with ID ${eventId}`);
+
+    try{
+      const response = await fetch(`http://localhost:5001/api/bookings/deleteBooking/${eventId}`, {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+
+      });
+      const data = await response.json();
+      console.log(data);
+      // Remove the canceled event from the rsvpdEvents state
+      setRsvpdEvents(rsvpdEvents.filter(event => event.BookingID !== eventId));
+      
+
+    }catch(error){
+      console.error('Error canceling RSVP:', error);
+    };
   };
 
   return (
@@ -55,7 +70,7 @@ const MyEvents = () => {
                 <p className="card-text">Date: {event.EventDate}</p>
                 <p className="card-text">Location: {event.Location}</p>
                 <p className="card-text">Capacity: {100}</p>
-                <button className="btn btn-danger btn-block w-100" onClick={() => handleCancelRSVP(event.id)}>
+                <button className="btn btn-danger btn-block w-100" onClick={() => handleCancelRSVP(event.BookingID)}>
                   Cancel RSVP
                 </button>
               </div>

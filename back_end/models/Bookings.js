@@ -22,10 +22,14 @@ class Bookings {
 
     // delete booking
     static async deleteBooking(BookingID) {
-        const query = `DELETE FROM bookings WHERE bookingid = ?`;
+        console.log("Deleting booking")
+        const query = `DELETE FROM bookings WHERE bookingid = ${BookingID}`;
         try {
-            await dbConnection.query(query, [BookingID]);
+            const response = await dbConnection.query(query);
+            return response;
+        
         } catch (error) {
+            console.log(error)
             throw error;
         }
     }

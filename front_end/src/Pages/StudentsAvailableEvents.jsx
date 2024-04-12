@@ -7,10 +7,24 @@ const StudentsAvailableEvents = () => {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
+//   router.get('/getAvailableEvents/:userID', auth, async (req, res) => {
+//     const userID = req.params.userID;
+//     try {
+//         console.log("Get all events");
+//         const events = await Event.getAvailableEvents(userID);
+//         res.json(events);
+//     } catch (error) {
+//         res.status(500).json({ error });
+//     }
+// })
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/events/getevents', {
+        // get user from local storage
+        const user = JSON.parse(localStorage.getItem('user'));
+        const userID = user.id;
+        const response = await fetch(`http://localhost:5001/api/events/getAvailableEvents/${userID}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           

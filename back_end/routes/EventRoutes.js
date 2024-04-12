@@ -27,15 +27,30 @@ router.post('/create', auth, async (req, res) => {
 
 
 // get all events
-router.get('/getevents', auth, async (req, res) => {
+router.get('/getAvailableEvents/:userID', auth, async (req, res) => {
+    const userID = req.params.userID;
     try {
         console.log("Get all events");
-        const events = await Event.getAvailableEvents();
+        const events = await Event.getAvailableEvents(userID);
         res.json(events);
     } catch (error) {
         res.status(500).json({ error });
     }
 })
+
+// get all events and return a new  value isregistered if the user has registered for the event
+router.get('/getIsRegisteredEvents/:userID', auth, async (req, res) => {
+    const userID = req.params.userID;
+    console.log("User ID is", userID);
+    try {
+        console.log("Get all events");
+        const events = await Event.getEventsAndCheckIfRegistered(userID);
+        res.json(events);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 
 // get events by organizer
 router.get('/getevents/:userID', auth, async (req, res) => {

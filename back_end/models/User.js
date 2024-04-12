@@ -65,14 +65,16 @@ class User {
   }
 
   // find all users that are organizers
-  static findOrganizers() {
-    return new Promise((resolve, reject) => {
+  static async findOrganizers() {
+    try {
       const query = 'SELECT * FROM users WHERE isorganizer = true';
-      dbConnection.query(query, (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      });
-    });
+      const rows = await dbConnection.query(query);
+      console.log(rows[0]);
+      return rows[0];
+    }
+    catch (error) {
+      throw error;
+    }
   }
 
   static generateToken(user) {

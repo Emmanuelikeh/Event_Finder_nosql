@@ -27,6 +27,7 @@ router.post('/signup', async (req, res) => {
 
 // get all organizers
 router.get('/organizers', auth, async (req, res) => {
+    console.log("Get all organizers");
     try {
         const organizers = await User.findOrganizers();
         res.json(organizers);
