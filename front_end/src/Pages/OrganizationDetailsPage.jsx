@@ -4,34 +4,6 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate} from 'react-router-dom';
 
 
-// Static data for demonstration purposes
-// const organizationDetails = {
-//   name: 'Acme Events',
-//   email: 'info@acmeevents.com',
-//   imageUrl: 'https://via.placeholder.com/150', // Replace with the actual image URL
-//   events: [
-//     {
-//       id: 1,
-//       name: 'Tech Summit 2024',
-//       date: '2024-06-15',
-//       isRegistered: true,
-//     },
-//     {
-//       id: 2,
-//       name: 'Music Festival',
-//       date: '2024-08-20',
-//       isRegistered: false,
-//     },
-//     {
-//       id: 3,
-//       name: 'Art Exhibition',
-//       date: '2024-10-01',
-//       isRegistered: true,
-//     },
-//   ],
-// };
-
-
 const OrganizationDetailPage = () => {
   // Get the organization details from the location state
   const location = useLocation();
@@ -40,16 +12,6 @@ const OrganizationDetailPage = () => {
   const { USERID, USERNAME, EMAIL } = location.state;
   console.log(USERID, USERNAME, EMAIL);
 
-  //   router.get('/getIsRegisteredEvents/:userID', auth, async (req, res) => {
-  //     const userID = req.params.userID;
-  //     try {
-  //         console.log("Get all events");
-  //         const events = await Event.getEventsAndCheckIfRegistered(userID);
-  //         res.json(events);
-  //     } catch (error) {
-  //         res.status(500).json({ error });
-  //     }
-  // });
 
   useEffect(() => {
     const fetchOrganizationDetails = async () => {
@@ -71,9 +33,6 @@ const OrganizationDetailPage = () => {
   }, [])
 
   const handleRSVP = (EventID, EventName,Location, Organizer,  EventDescription, EventDate, StartTime, EndTime)=> {
-    // navigate to the booking page
-    //  eventId, eventName, location, organizer, eventDescription, startTime, endTime
-   
     navigate('/booking', { state: { EventID, EventName, Location, Organizer, EventDescription, EventDate, StartTime, EndTime } });
   };
 
