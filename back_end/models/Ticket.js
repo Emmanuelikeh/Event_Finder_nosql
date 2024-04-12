@@ -33,6 +33,22 @@ class Tickets {
         }
     }
 
+    // get ticket type and count for an event
+    static  async  getTicketCount(EventID) {
+        const query = `
+        SELECT TicketType, COUNT(*) AS count
+        FROM Tickets
+        WHERE EventID = ${EventID}
+        GROUP BY TicketType
+      `;
+        try {
+            const rows = await dbConnection.query(query, [EventID]);
+            return rows[0];
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 module.exports = Tickets;

@@ -27,20 +27,45 @@ class Bookings {
         try {
             const response = await dbConnection.query(query);
             return response;
-        
+
         } catch (error) {
             console.log(error)
             throw error;
         }
     }
 
-    // get all bookings for an event
-    static async getBookingsByEvent(EventID) {
-        const query = `SELECT * FROM bookings WHERE eventid = ?`;
+    // get all attendees for an event 
+    static async getAttendees(EventID) {
+        console.log("Getting attendees")
+        const query = `
+        SELECT b.BookingID, b.AttendeeID, b.TicketID, u.Username, u.Email, t.TicketType
+        FROM Bookings b
+        JOIN Users u ON b.AttendeeID = u.UserID
+        JOIN Tickets t ON b.TicketID = t.TicketID
+        WHERE b.EventID = ${EventID}
+      `;
         try {
-            const rows = await dbConnection.query(query, [EventID]);
-            return rows[0];
+            const response = await dbConnection.query(query);
+            return response;
         } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    // get date and  count of attendees for an event
+    static async getAttendeesCount(EventID) {
+        console.log("Getting attendees count")
+        const query = `SELECT DATE(b.BookingDateTime) AS date, COUNT(*) AS count
+        FROM Bookings b
+        WHERE b.EventID = @eventId
+        GROUP BY DATE(b.BookingDateTime)
+        ORDER BY date`
+        try {
+            const response = await dbConnection.query(query);
+            return response;
+        } catch (error) {
+            console.log(error)
             throw error;
         }
     }

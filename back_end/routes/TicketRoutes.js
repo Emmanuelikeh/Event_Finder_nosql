@@ -15,4 +15,16 @@ router.get('/gettickets/:eventID', auth, async (req, res) => {
 }
 )
 
+router.get('/getTicketCount/:eventID', auth, async (req, res) => {
+    const eventID = req.params.eventID;
+    try {
+        const ticketCount = await Ticket.getTicketCount(eventID);
+        console.log("Ticket count is", ticketCount);
+        res.json(ticketCount);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+}
+)
+
 module.exports = router;

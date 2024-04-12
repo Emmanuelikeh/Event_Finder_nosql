@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const EventAnalytics = () => {
+  const [attendee, setAttendee] = useState([]);
   // Dummy event data
   const eventData = {
     EventName: 'Summer Music Festival',

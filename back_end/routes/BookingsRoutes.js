@@ -24,5 +24,26 @@ router.delete('/deleteBooking/:BookingID', auth, async (req, res) => {
     }
 })
 
+router.get('/getAttendees/:EventID', auth, async (req, res) => {
+    const EventID = req.params.EventID;
+    try {
+        const attendees = await Booking.getAttendees(EventID);
+        res.json(attendees);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
+
+router.get('/getAttendeesCount/:EventID', auth, async (req, res) => {
+    const EventID = req.params.EventID;
+    try {
+        const attendeesCount = await Booking.getAttendeesCount(EventID);
+        res.json(attendeesCount);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
 
 module.exports = router;
