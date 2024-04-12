@@ -1,37 +1,77 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { useLocation } from 'react-router-dom';
 
 const EventAnalytics = () => {
+
+  const location = useLocation();
+  const { EventID, EventName, EventDescription, EventDate, StartTime, EndTime, VenueName, Location, Capacity } = location.state;
   const [attendee, setAttendee] = useState([]);
-  // Dummy event data
-  const eventData = {
-    EventName: 'Summer Music Festival',
-    EventDate: '2023-06-15',
-    Location: 'Central Park, New York',
-    Capacity: 5000,
-    TotalAttendees: 4200,
-    Attendees: [
-      { id: 1, name: 'John Doe', email: 'john.doe@example.com', ticketType: 'General Admission' },
-      { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com', ticketType: 'VIP' },
-      { id: 3, name: 'Bob Johnson', email: 'bob.johnson@example.com', ticketType: 'Early Bird' },
-      // Add more attendees as needed
-    ],
-  };
+  const [signupData, setSignupData] = useState([]);
+  const [attendeeData, setAttendeeData] = useState([]);
+  const [totalAttendees, setTotalAttendees] = useState(0);
 
-  // Dummy data for demonstration purposes
-  const attendeeData = [
-    { name: 'General Admission', count: 3000 },
-    { name: 'VIP', count: 800 },
-    { name: 'Early Bird', count: 400 },
-  ];
 
-  const signupData = [
-    { date: '2023-04-01', count: 200 },
-    { date: '2023-04-08', count: 500 },
-    { date: '2023-04-15', count: 1000 },
-    { date: '2023-04-22', count: 1500 },
-    { date: '2023-04-29', count: 1000 },
-  ];
+  useEffect(() => {
+    fetch(`http://localhost:5001/api/bookings/getAttendeesCount/${EventID}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setSignupData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching signup data:', error);
+      });
+
+    fetch(`http://localhost:5001/api/tickets//getTicketCount/${EventID}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setAttendeeData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching signup data:', error);
+      });
+
+    fetch(`http://localhost:5001/api/bookings/getAttendees/${EventID}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setAttendee(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching attendees:', error);
+      });
+
+
+    fetch(`http://localhost:5001/api/bookings/getBookingsCount/${EventID}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setTotalAttendees(data[0].count);
+      })
+      .catch((error) => {
+        console.error('Error fetching attendees:', error);
+      });
+
+
+  }, [EventID]);
 
   return (
     <div className="container mt-4">
@@ -40,18 +80,18 @@ const EventAnalytics = () => {
         <div className="col-md-6">
           <div className="card mb-4">
             <div className="card-body">
-              <h5 className="card-title">Event: {eventData.EventName}</h5>
-              <p className="card-text">Date: {eventData.EventDate}</p>
-              <p className="card-text">Location: {eventData.Location}</p>
-              <p className="card-text">Capacity: {eventData.Capacity}</p>
-              <p className="card-text">Total Attendees: {eventData.TotalAttendees}</p>
+              <h5 className="card-title">Event: {EventName}</h5>
+              <p className="card-text">Date: {EventDate}</p>
+              <p className="card-text">Location: {Location}</p>
+              <p className="card-text">Capacity: {Capacity}</p>
+              <p className="card-text">Total Attendees: {totalAttendees}</p>
             </div>
           </div>
           <div className="card">
             <div className="card-body">
               <h5 className="card-title">Attendee Breakdown</h5>
               <BarChart width={500} height={300} data={attendeeData}>
-                <XAxis dataKey="name" />
+                <XAxis dataKey="TicketType" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
@@ -91,11 +131,11 @@ const EventAnalytics = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {eventData.Attendees.map((attendee) => (
-                    <tr key={attendee.id}>
-                      <td>{attendee.name}</td>
-                      <td>{attendee.email}</td>
-                      <td>{attendee.ticketType}</td>
+                  {attendee.map((data) => (
+                    <tr key={data.BookingID}>
+                      <td>{data.Username}</td>
+                      <td>{data.Email}</td>
+                      <td>{data.TicketType}</td>
                     </tr>
                   ))}
                 </tbody>

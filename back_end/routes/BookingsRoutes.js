@@ -38,6 +38,7 @@ router.get('/getAttendees/:EventID', auth, async (req, res) => {
 router.get('/getAttendeesCount/:EventID', auth, async (req, res) => {
     const EventID = req.params.EventID;
     try {
+        console.log("Event ID is, Helloo: ", EventID);
         const attendeesCount = await Booking.getAttendeesCount(EventID);
         res.json(attendeesCount);
     } catch (error) {
@@ -45,5 +46,14 @@ router.get('/getAttendeesCount/:EventID', auth, async (req, res) => {
     }
 })
 
+router.get('/getBookingsCount/:EventID', auth, async (req, res) => {
+    const EventID = req.params.EventID;
+    try {
+        const bookings = await Booking.getBookingCount(EventID);
+        res.json(bookings);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
 
 module.exports = router;

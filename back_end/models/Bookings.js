@@ -1,12 +1,4 @@
 const dbConnection = require('../config/dbConnection');
-// Bookings Table:
-// BookingID (Primary Key)
-// EventID (Foreign Key referencing Events table)
-// AttendeeID (Foreign Key referencing Users table)
-// TicketID (Foreign Key referencing Tickets table)
-// BookingDateTime
-// PaymentStatus
-
 class Bookings {
     static async createBooking(EventID, AttendeeID, TicketID, BookingDateTime, PaymentStatus) {
         console.log("Creating booking")
@@ -46,7 +38,8 @@ class Bookings {
       `;
         try {
             const response = await dbConnection.query(query);
-            return response;
+            console.log("Attendees are", response[0]);
+            return response[0];
         } catch (error) {
             console.log(error)
             throw error;
@@ -58,12 +51,27 @@ class Bookings {
         console.log("Getting attendees count")
         const query = `SELECT DATE(b.BookingDateTime) AS date, COUNT(*) AS count
         FROM Bookings b
-        WHERE b.EventID = @eventId
+        WHERE b.EventID = ${EventID}
         GROUP BY DATE(b.BookingDateTime)
         ORDER BY date`
         try {
             const response = await dbConnection.query(query);
-            return response;
+            console.log(response[0]);
+            return response[0];
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    // get total number of booking for an event 
+    static async getBookingCount(EventID) {
+        console.log("Getting booking count")
+        const query = `SELECT COUNT(*) AS count FROM Bookings WHERE EventID = ${EventID}`;
+        try {
+            const response = await dbConnection.query(query);
+            console.log(response[0]);
+            return response[0];
         } catch (error) {
             console.log(error)
             throw error;

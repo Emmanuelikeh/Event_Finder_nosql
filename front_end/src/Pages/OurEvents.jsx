@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const OurEvents = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [events, setEvents] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Make API request to fetch events
@@ -69,9 +70,8 @@ const OurEvents = () => {
     console.log(`Delete event with ID ${eventId}`);
   };
 
-  const handleViewAnalytics = (eventId) => {
-    // Handle viewing analytics logic here
-    console.log(`View analytics for event with ID ${eventId}`);
+  const handleViewAnalytics = (EventID, EventName, EventDescription, EventDate, StartTime, EndTime, VenueName, Location, Capacity) => {
+    navigate("/our-event/event-analytics", { state: { EventID, EventName, EventDescription, EventDate, StartTime, EndTime, VenueName, Location, Capacity } });
   };
 
   const handleSearch = (e) => {
@@ -97,7 +97,8 @@ const OurEvents = () => {
       </div>
       <div className="row">
         {filteredEvents.map((event, index) => (
-          <div key={event.id} className="col-md-4 col-sm-6 mb-4">
+          console.log(event.EventID),
+          <div key={event.EventID} className="col-md-4 col-sm-6 mb-4">
             <div className="card h-100">
               <div className="card-body">
                 <h5 className="card-title">{event.EventName}</h5>
@@ -122,16 +123,12 @@ const OurEvents = () => {
                   >
                     Delete
                   </button>
-                  <Link
-                    to={{
-                      pathname: `/our-event/event-analytics`,
-                      state: { eventId: event.id },
-                    }}
-                    className="btn btn-info"
-                    style={{ flex: "2" }}
-                  >
+                  {/* // const {EventID, EventName, EventDescription, EventDate, StartTime, EndTime, VenueName, Location , Capacity  } */}
+                  <button onClick={() => handleViewAnalytics(event.EventID, event.EventName, event.EventDescription, event.EventDate, event.StartTime, event.EndTime, event.VenueName, event.Location, event.Capacity)}>
                     View Analytics
-                  </Link>
+                  </button>
+
+
                 </div>
               </div>
             </div>
