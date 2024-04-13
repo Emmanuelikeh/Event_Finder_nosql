@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const Venue = require('../models/Venue');
+const venue = require('../models/Venue');
 
 
 router.get('/', async (req, res) => {
-    try {
-        const venues = await Venue.getAllVenues();
+    try{
+        const venues = await venue.find();
         res.json(venues);
     } catch (error) {
         res.status(500).json({ error });
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const venue = await Venue.getVenueById(id);
+        const venue = await venue.findById(id);
         res.json(venue);
     } catch (error) {
         res.status(500).json({ error });

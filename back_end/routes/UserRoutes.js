@@ -3,26 +3,59 @@ const User = require('../models/User');
 const auth = require('../middleware/UserAuth');
 
 router.post('/login', async (req, res) => {
-    const { email, password, isorganizer } = req.body;
+
     try {
-        const user = await User.login(email, password, isorganizer);
-        const token  = User.generateToken(user);
-        // pass the user and the token to the client
-        res.json({ user, token });
+        let { email, password, isorganizer } = req.body;
+        if(isorganizer === 'organizer') {
+            isorganizer = true;
+        }
+        else {
+            isorganizer = false;
+        }
+        console.log(email, password, isorganizer);
+        const user = await User.getUserByCredentials(email, password, isorganizer);
+        const token = await user.generateToken();
+        res.status(200).json({ user, token });
     } catch (err) {
         console.log(`Error in login: ${err}`);
-        res.status(401).json({ error: err}); 
+        res.status(401).json({ error: err });
     }
 })
 
 router.post('/signup', async (req, res) => {
-    const { username, email, password, isorganizer } = req.body;
     try {
-        await User.signup(username, email, password, isorganizer);
+        let { username, email, password, isorganizer } = req.body;
+        console.log(username, email, password, isorganizer);
+        if(isorganizer === 'organizer') {
+            isorganizer = true;
+        }
+        else {
+            isorganizer = false;
+        }
+        console.log(email, password, isorganizer);
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+           return res.status(400).json({ error: 'User already exists' });
+        }
+
+        const user = new User({ username, email, password, isorganizer });
+        await user.save();
+        console.log("User created successfully");
         res.json({ message: 'User created successfully' });
-    } catch (err) {
-        res.status(400).json({ error: err});
     }
+    catch (err) {
+        res.status(400).json({ error: err });
+    }
+
+
+    // const { username, email, password, isorganizer } = req.body;
+    // try {
+    //     await User.signup(username, email, password, isorganizer);
+    //     res.json({ message: 'User created successfully' });
+    // } catch (err) {
+    //     res.status(400).json({ error: err});
+    // }
 })
 
 // get all organizers
