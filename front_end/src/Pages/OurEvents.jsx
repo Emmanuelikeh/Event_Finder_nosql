@@ -12,7 +12,7 @@ const OurEvents = () => {
     const fetchEvents = async () => {
       // get user from local storage
       const user = JSON.parse(localStorage.getItem("user"));
-      const userID = user.id;
+      const userID = user._id;
       // get token from local storage
       const token = localStorage.getItem("token");
       try {
@@ -79,7 +79,7 @@ const OurEvents = () => {
   };
 
   const filteredEvents = events.filter((event) =>
-    event.EventName.toLowerCase().includes(searchTerm.toLowerCase())
+    event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -98,33 +98,33 @@ const OurEvents = () => {
       <div className="row">
         {filteredEvents.map((event, index) => (
           console.log(event.EventID),
-          <div key={event.EventID} className="col-md-4 col-sm-6 mb-4">
+          <div key={event._id} className="col-md-4 col-sm-6 mb-4">
             <div className="card h-100">
               <div className="card-body">
-                <h5 className="card-title">{event.EventName}</h5>
+                <h5 className="card-title">{event.eventName}</h5>
                 <p className="card-text">
                   Date:{" "}
-                  {formatDate(event.EventDate, event.StartTime, event.EndTime)}
+                  {formatDate(event.eventDate, event.eventStartTime, event.eventEndTime)}
                 </p>
-                <p className="card-text">Location: {event.Location}</p>
-                <p className="card-text">Capacity: {event.Capacity}</p>
+                <p className="card-text">Location: {event.venueID.venueLocation}</p>
+                <p className="card-text">Capacity: {event.venueID.venueCapacity}</p>
                 <div className="d-flex justify-content-between">
                   <button
                     className="btn btn-primary"
                     style={{ flex: "1" }}
-                    onClick={() => handleEditEvent(event.id)}
+                    onClick={() => handleEditEvent(event._id)}
                   >
                     Edit
                   </button>
                   <button
                     className="btn btn-danger mx-2"
                     style={{ flex: "1" }}
-                    onClick={() => handleDeleteEvent(event.id)}
+                    onClick={() => handleDeleteEvent(event._id)}
                   >
                     Delete
                   </button>
                   {/* // const {EventID, EventName, EventDescription, EventDate, StartTime, EndTime, VenueName, Location , Capacity  } */}
-                  <button onClick={() => handleViewAnalytics(event.EventID, event.EventName, event.EventDescription, event.EventDate, event.StartTime, event.EndTime, event.VenueName, event.Location, event.Capacity)}>
+                  <button onClick={() => handleViewAnalytics(event._id, event.eventName, event.eventDescription, event.eventDate, event.eventStartTime, event.eventEndTime, event.venueID.venueName, event.venueID.venueLocation, event.venueID.venueCapacity)}>
                     View Analytics
                   </button>
 

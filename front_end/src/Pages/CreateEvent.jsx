@@ -26,8 +26,8 @@ const CreateEventForm = () => {
 
   useEffect(() => {
     if (selectedVenue) {
-      setVenueCapacity(selectedVenue.Capacity);
-      updateFreeTicketQuantity(selectedVenue.Capacity);
+      setVenueCapacity(selectedVenue.venueCapacity);
+      updateFreeTicketQuantity(selectedVenue.venueCapacity);
     }
   }, [selectedVenue]);
 
@@ -105,7 +105,8 @@ const CreateEventForm = () => {
 
   const handleVenueChange = (e) => {
     const selectedVenueId = e.target.value;
-    const selectedVenue = venues.find(venue => venue.VenueID === parseInt(selectedVenueId));
+    console.log(selectedVenueId);
+    const selectedVenue = venues.find(venue => venue._id === selectedVenueId);
     setFormData(prevData => ({ ...prevData, venueId: selectedVenueId }));
     setSelectedVenue(selectedVenue);
   };
@@ -127,7 +128,7 @@ const CreateEventForm = () => {
     // get the user from local storage
     const user = JSON.parse(localStorage.getItem('user'));
     // get the user id
-    const organizerID = user.id;
+    const organizerID = user._id;
 
 
     // Create a new event
@@ -241,15 +242,15 @@ const CreateEventForm = () => {
           >
             <option value="">Select a venue</option>
             {venues.map((venue) => (
-              <option key={venue.VenueID} value={venue.VenueID}>
-                {venue.VenueName}
+              <option key={venue._id} value={venue._id}>
+                {venue.venueName}
               </option>
             ))}
           </select>
           {selectedVenue && (
             <div className="mt-2">
-              <p>Selected Venue: {selectedVenue.VenueName}</p>
-              <p>Capacity: {selectedVenue.Capacity}</p>
+              <p>Selected Venue: {selectedVenue.venueName}</p>
+              <p>Capacity: {selectedVenue.venueCapacity}</p>
             </div>
           )}
         </div>

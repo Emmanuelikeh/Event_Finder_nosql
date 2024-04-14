@@ -1,27 +1,43 @@
 const router = require('express').Router();
 const Event = require('../models/Events');
-const Ticket = require('../models/Ticket');
 const auth = require('../middleware/UserAuth');
 
-
 router.post('/create', auth, async (req, res) => {
-    console.log("create event");
-    console.log(req.body);
-    const { eventName, eventDescription, eventDate, eventStartTime, eventEndTime, venueId, organizerID,  ticketOptions } = req.body;
-    console.log(eventName, eventDescription, eventDate, eventStartTime, eventEndTime, venueId, organizerID, ticketOptions);
 
     try {
-        const eventId = await Event.createEvent(eventName, eventDescription, eventDate, eventStartTime, eventEndTime, venueId, organizerID);
-        console.log("Event ID is", eventId);
-        for (let i = 0; i < ticketOptions.length; i++) {
-            // ticketOptions: [{ id: 'free', name: 'Free', description: 'Free Ticket', price: 0, quantity: 0, error: false }],
-            const { id, name, description, price, quantity, error } = ticketOptions[i];
-            console.log("Ticket details are", id, name, description, price, quantity, error);
-            await Ticket.createTicket(eventId, name, description, price, quantity);
-        }
+        let { eventName, eventDescription, eventDate, eventStartTime, eventEndTime, venueId, organizerID, ticketOptions } = req.body;
+        // convert the date strings to date objects
+        eventDate = new Date(eventDate);
+
+        eventStartTime = new Date(`${eventDate.toDateString()} ${eventStartTime}`);
+        eventEndTime = new Date(`${eventDate.toDateString()} ${eventEndTime}`);
+        // remove the id and error from the ticketOptions
+        ticketOptions = ticketOptions.map(ticket => {
+            delete ticket.id;
+            delete ticket.error;
+            return ticket;
+        });
+       
+        // modify the json key to match the schema
+        ticketOptions = ticketOptions.map(ticket => {
+            ticket.ticketType = ticket.name;
+            ticket.ticketDescription = ticket.description;
+            ticket.ticketPrice = ticket.price;
+            ticket.ticketAvailableQuantity = ticket.quantity;
+            delete ticket.name;
+            delete ticket.description;
+            delete ticket.price;
+            delete ticket.quantity;
+            return ticket;
+        }); 
+
+        console.log("Ticket options are", ticketOptions);
+        const event = new Event({ eventName, eventDescription, eventDate, eventStartTime, eventEndTime, venueID:venueId, organizerID, tickets: ticketOptions });
+        await event.save();
         res.json({ message: 'Event created successfully' });
     } catch (error) {
         res.status(500).json({ error });
+        console.log(error);
     }
 })
 
@@ -55,12 +71,13 @@ router.get('/getIsRegisteredEvents/:userID', auth, async (req, res) => {
 // get events by organizer
 router.get('/getevents/:userID', auth, async (req, res) => {
     const OrganizerID = req.params.userID;
-    console.log("Organizer ID is", OrganizerID)
-    try {
-        console.log("Organizer ID is", OrganizerID)
+    try{
+        // get all evenst by the organizer including the infomation of the venue 
         const events = await Event.getEventsByOrganizer(OrganizerID);
-        res.json(events);   
-    } catch (error) {
+        console.log(events);
+        res.json(events);
+    }
+    catch (error) {
         res.status(500).json({ error });
     }
 })
