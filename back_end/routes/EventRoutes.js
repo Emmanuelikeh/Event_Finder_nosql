@@ -107,16 +107,16 @@ router.get('/date/:date', auth, async (req, res) => {
 })
 
 // get registerd events by user
-router.get('/registered/:userID', auth, async (req, res) => {
-    const userID = req.params.userID;
-    console.log("User ID is", userID);
-    try {
-        const events = await Event.getAllRegisteredEvents(userID);
-        res.json(events);
-    } catch (error) {
-        res.status(500).json({ error });
-    }
-})
+// router.get('/registered/:userID', auth, async (req, res) => {
+//     const userID = req.params.userID;
+//     console.log("User ID is", userID);
+//     try {
+//         const events = await Event.getAllRegisteredEvents(userID);
+//         res.json(events);
+//     } catch (error) {
+//         res.status(500).json({ error });
+//     }
+// })
 
 // update events
 router.put('/:eventID', auth, async (req, res) => {

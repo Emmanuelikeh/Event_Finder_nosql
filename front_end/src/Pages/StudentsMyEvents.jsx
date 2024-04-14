@@ -14,10 +14,10 @@ const MyEvents = () => {
   useEffect(() => {
     // get user from local storage
     const user = JSON.parse(localStorage.getItem('user'));
-    const userID = user.id;
+    const userID = user._id;
     const fetchRsvpdEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/events/registered/${userID}`, {
+        const response = await fetch(`http://localhost:5001/api/bookings/registered/${userID}`, {
           headers: {
             authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -35,27 +35,30 @@ const MyEvents = () => {
 
 
 
-  const  handleCancelRSVP = async (eventId) => {
+  const handleCancelRSVP = async (bookingID, ticketID, eventID) => {
     // Handle canceling RSVP logic here
-    console.log(`Cancel RSVP for event with ID ${eventId}`);
-
-    try{
-      const response = await fetch(`http://localhost:5001/api/bookings/deleteBooking/${eventId}`, {
+    console.log(`Cancel RSVP for ticket with ID ${ticketID}`);
+    console.log(`Cancel RSVP for event with ID ${eventID}`);
+    console.log(`Cancel RSVP for booking with ID ${bookingID}`);
+  
+    try {
+      const response = await fetch(`http://localhost:5001/api/bookings/deleteBooking`, {
         method: 'DELETE',
         headers: {
-          authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+          'authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-
+        body: JSON.stringify({ bookingID, ticketID, eventID }),
       });
+  
       const data = await response.json();
       console.log(data);
+  
       // Remove the canceled event from the rsvpdEvents state
-      setRsvpdEvents(rsvpdEvents.filter(event => event.BookingID !== eventId));
-      
-
-    }catch(error){
+      setRsvpdEvents(rsvpdEvents.filter(event => event.bookingID !== bookingID));
+    } catch (error) {
       console.error('Error canceling RSVP:', error);
-    };
+    }
   };
 
   return (
@@ -66,11 +69,11 @@ const MyEvents = () => {
           <div key={index} className="col-md-4 col-sm-6 mb-4">
             <div className="card h-100">
               <div className="card-body">
-                <h5 className="card-title">{event.EventName}</h5>
-                <p className="card-text">Date: {event.EventDate}</p>
-                <p className="card-text">Location: {event.Location}</p>
-                <p className="card-text">Capacity: {100}</p>
-                <button className="btn btn-danger btn-block w-100" onClick={() => handleCancelRSVP(event.BookingID)}>
+                <h5 className="card-title">{event.eventID.eventName}</h5>
+                <p className="card-text">Date: {event.eventID.eventDate}</p>
+                <p className="card-text">Location: {event.venueInfo.venueLocation}</p>
+                <p className="card-text">Capacity: {event.venueInfo.venueCapacity}</p>
+                <button className="btn btn-danger btn-block w-100" onClick={() => handleCancelRSVP(event.bookingID, event.ticketID, event.eventID._id)}>
                   Cancel RSVP
                 </button>
               </div>

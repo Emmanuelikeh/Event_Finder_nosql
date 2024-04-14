@@ -17,30 +17,6 @@ const BookingPage = () => {
     cvv: '',
   });
 
-  // useEffect(() => {
-  //   // Fetch tickets from backend based on eventId
-  //   // get token from local storage
-  //   const token = localStorage.getItem('token');
-    
-  //   const fetchTickets = async () => {
-  //       try {
-  //           const response = await fetch(`http://localhost:5001/api/tickets/gettickets/${EventID}`, {
-  //           headers: {
-  //               Authorization: `Bearer ${token}`,
-  //           },
-  //           });
-  //           const data = await response.json();
-  //           console.log(data);
-  //           setTickets(data);
-  //       }
-  //       catch (error) {
-  //           console.error('Error fetching tickets:', error);
-  //       }
-
-  //   };
-  //   fetchTickets();
-  // }, [EventID]);
-
   const handleTicketSelect = (ticket) => {
     setSelectedTicket(ticket);
   };
@@ -89,7 +65,7 @@ const BookingPage = () => {
       });
 
       // Redirect to home page
-      history.push('/');
+      window.location.href = '/students-available-events';
 
     } catch (error) {
       console.error('Error creating booking:', error);
