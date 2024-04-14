@@ -48,6 +48,7 @@ router.get('/getAvailableEvents/:userID', auth, async (req, res) => {
     try {
         console.log("Get all events");
         const events = await Event.getAvailableEvents(userID);
+        console.log(events);
         res.json(events);
     } catch (error) {
         res.status(500).json({ error });

@@ -6,10 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const BookingPage = () => {
   const { state } = useLocation();
-  const { EventID, EventName, Location, Organizer, EventDescription, EventDate, StartTime, EndTime } = state;
-  console.log(EventID, EventName, Location, Organizer, EventDescription, EventDate, StartTime, EndTime);
+  const { EventID, EventName, Location, Organizer, EventDescription, EventDate, StartTime, EndTime, Tickets } = state;
+  console.log(EventID, EventName, Location, Organizer, EventDescription, EventDate, StartTime, Tickets);
 
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState(Tickets);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState({
     cardNumber: '',
@@ -17,29 +17,29 @@ const BookingPage = () => {
     cvv: '',
   });
 
-  useEffect(() => {
-    // Fetch tickets from backend based on eventId
-    // get token from local storage
-    const token = localStorage.getItem('token');
+  // useEffect(() => {
+  //   // Fetch tickets from backend based on eventId
+  //   // get token from local storage
+  //   const token = localStorage.getItem('token');
     
-    const fetchTickets = async () => {
-        try {
-            const response = await fetch(`http://localhost:5001/api/tickets/gettickets/${EventID}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            });
-            const data = await response.json();
-            console.log(data);
-            setTickets(data);
-        }
-        catch (error) {
-            console.error('Error fetching tickets:', error);
-        }
+  //   const fetchTickets = async () => {
+  //       try {
+  //           const response = await fetch(`http://localhost:5001/api/tickets/gettickets/${EventID}`, {
+  //           headers: {
+  //               Authorization: `Bearer ${token}`,
+  //           },
+  //           });
+  //           const data = await response.json();
+  //           console.log(data);
+  //           setTickets(data);
+  //       }
+  //       catch (error) {
+  //           console.error('Error fetching tickets:', error);
+  //       }
 
-    };
-    fetchTickets();
-  }, [EventID]);
+  //   };
+  //   fetchTickets();
+  // }, [EventID]);
 
   const handleTicketSelect = (ticket) => {
     setSelectedTicket(ticket);
@@ -59,12 +59,12 @@ const BookingPage = () => {
     const token = localStorage.getItem('token');
     // get user from local storage
     const user = JSON.parse(localStorage.getItem('user'));
-    const AttendeeID = user.id;
+    const AttendeeID = user._id;
 
     const bookingData = {
       EventID: EventID, 
       AttendeeID: AttendeeID, // Replace with actual user ID
-      TicketID: selectedTicket.TicketID,
+      TicketID: selectedTicket._id,
       BookingDateTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
       PaymentStatus: 'Paid',
     };
@@ -87,6 +87,10 @@ const BookingPage = () => {
         expirationDate: '',
         cvv: '',
       });
+
+      // Redirect to home page
+      history.push('/');
+
     } catch (error) {
       console.error('Error creating booking:', error);
     }
@@ -142,19 +146,19 @@ const BookingPage = () => {
                 <select
                   className="form-select"
                   id="ticketSelect"
-                  value={selectedTicket?.TicketID || ''}
-                  onChange={(e) => handleTicketSelect(tickets.find((t) => t.TicketID === parseInt(e.target.value)))}
+                  value={selectedTicket?._id || ''}
+                  onChange={(e) => handleTicketSelect(tickets.find((t) => t._id === e.target.value))}
                 >
                   <option value="">Select a ticket</option>
                   {tickets.map((ticket) => (
-                    <option key={ticket.TicketID} value={ticket.TicketID}>
-                      {ticket.TicketType} - ${ticket.Price} , Quantity: {ticket.AvailableQuantity}
+                    <option key={ticket._id} value={ticket._id}>
+                      {ticket.ticketType} - ${ticket.ticketPrice} , Quantity: {ticket.ticketAvailableQuantity}
                     </option>
                   ))}
                 </select>   
               </div>
             </div>
-            {selectedTicket?.TicketPrice > 0 && (
+            {selectedTicket?.ticketPrice > 0 && (
               <div className="col-md-6">
                 <h3>Payment</h3>
                 <div className="mb-3">

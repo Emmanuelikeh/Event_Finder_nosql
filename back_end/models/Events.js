@@ -44,6 +44,31 @@ eventSchema.statics.getEventsByOrganizer = async function (OrganizerID) {
     return events;
 }
 
+async function getOrganizerInfo(organizerID) {
+    const organizer = await mongoose.model('User').findById(organizerID, 'username email');
+    return organizer;
+}
+
+
+eventSchema.statics.getAvailableEvents = async function (userID) {
+    const events = await this.find({
+        eventDate: { $gte: new Date() }
+    })
+        .populate('venueID')
+        .select('-__v'); // Exclude the __v field from the result
+
+    // Fetch organizer information for each event
+    const eventsWithOrganizer = await Promise.all(
+        events.map(async (event) => {
+            const organizer = await getOrganizerInfo(event.organizerID);
+            return { ...event.toObject(), organizer };
+        })
+    );
+
+    return eventsWithOrganizer;
+};
+
+
 
 const event = mongoose.model('events', eventSchema);
 module.exports = event;

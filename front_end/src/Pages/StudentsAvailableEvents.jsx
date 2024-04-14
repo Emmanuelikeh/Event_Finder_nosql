@@ -7,23 +7,12 @@ const StudentsAvailableEvents = () => {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
-//   router.get('/getAvailableEvents/:userID', auth, async (req, res) => {
-//     const userID = req.params.userID;
-//     try {
-//         console.log("Get all events");
-//         const events = await Event.getAvailableEvents(userID);
-//         res.json(events);
-//     } catch (error) {
-//         res.status(500).json({ error });
-//     }
-// })
-
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         // get user from local storage
         const user = JSON.parse(localStorage.getItem('user'));
-        const userID = user.id;
+        const userID = user._id;
         const response = await fetch(`http://localhost:5001/api/events/getAvailableEvents/${userID}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -39,14 +28,13 @@ const StudentsAvailableEvents = () => {
       }
     }
     fetchEvents();
-
   }, []);
 
-  const handleRSVP = (EventID, EventName,Location, Organizer,  EventDescription, EventDate, StartTime, EndTime)=> {
+  const handleRSVP = (EventID, EventName,Location, Organizer,  EventDescription, EventDate, StartTime, EndTime, Tickets)=> {
     // navigate to the booking page
     //  eventId, eventName, location, organizer, eventDescription, startTime, endTime
    
-    navigate('/booking', { state: { EventID, EventName, Location, Organizer, EventDescription, EventDate, StartTime, EndTime } });
+    navigate('/booking', { state: { EventID, EventName, Location, Organizer, EventDescription, EventDate, StartTime, EndTime , Tickets} });
   };
 
   const handleSearch = (e) => {
@@ -77,7 +65,7 @@ const StudentsAvailableEvents = () => {
   };
 
   const filteredEvents = events.filter(event =>
-    event.EventName.toLowerCase().includes(searchTerm.toLowerCase())
+    event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -95,14 +83,14 @@ const StudentsAvailableEvents = () => {
       </div>
       <div className="row">
         {filteredEvents.map((event, index) => (
-          <div key={event.id} className="col-md-4 col-sm-6 mb-4">
+          <div key={event._id} className="col-md-4 col-sm-6 mb-4">
             <div className="card h-100">
               <div className="card-body">
-                <h5 className="card-title">{event.EventName}</h5>
-                <p className="card-text">Date: {formatDate(event.EventDate, event.StartTime, event.EndTime)}</p>
-                <p className="card-text">Location: {event.Location}</p>
-                <p className="card-text"> {event.Organizer}</p>
-                <button className="btn btn-primary btn-block w-100" onClick={() => handleRSVP(event.EventID,event.EventName,event.Location, event.Organizer, event.EventDescription,event.EventDate, event.StartTime, event.EndTime)}>
+                <h5 className="card-title">{event.eventName}</h5>
+                <p className="card-text">Date: {formatDate(event.eventDate, event.eventStartTime, event.eventEndTime)}</p>
+                <p className="card-text">Location: {event.venueID.venueLocation}</p>
+                <p className="card-text"> {event.organizer.username}</p>
+                <button className="btn btn-primary btn-block w-100" onClick={() => handleRSVP(event._id,event.eventName,event.venueID.venueLocation, event.organizer.username, event.eventDescription,event.eventDate, event.eventStartTime, event.eventEndTime, event.tickets)}>
                   RSVP
                 </button>
               </div>
