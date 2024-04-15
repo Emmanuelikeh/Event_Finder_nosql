@@ -27,7 +27,7 @@ const EventAnalytics = () => {
         console.error('Error fetching signup data:', error);
       });
 
-    fetch(`http://localhost:5001/api/tickets//getTicketCount/${EventID}`, {
+    fetch(`http://localhost:5001/api/bookings/getTicketTypeCounts/${EventID}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       },

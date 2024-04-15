@@ -80,26 +80,110 @@ router.delete('/deleteBooking', auth, async (req, res) => {
 })
 
 router.get('/getAttendees/:EventID', auth, async (req, res) => {
-    const EventID = req.params.EventID;
     try {
-        const attendees = await Booking.getAttendees(EventID);
-        res.json(attendees);
+      const eventID = req.params.EventID;
+  
+      // Get all the bookings for the specified event
+      const bookings = await Booking.find({
+        eventID: eventID
+      })
+      .populate('attendeeID', 'username email')
+      .populate('ticketID', 'ticketType');
+  
+      // Extract the attendee and ticket information from the bookings
+      const attendees = bookings.map(booking => ({
+        name: booking.attendeeID.username,
+        email: booking.attendeeID.email,
+        ticketType: booking.ticketID.ticketType
+      }));
+  
+      res.status(200).json(attendees);
     } catch (error) {
-        res.status(500).json({ error });
+      res.status(500).json({ error: error.message });
     }
-})
-
+  });
 
 router.get('/getAttendeesCount/:EventID', auth, async (req, res) => {
     const EventID = req.params.EventID;
-    try {
-        console.log("Event ID is, Helloo: ", EventID);
-        const attendeesCount = await Booking.getAttendeesCount(EventID);
-        res.json(attendeesCount);
-    } catch (error) {
-        res.status(500).json({ error });
+    // get date and  count of attendees for an event
+    try{
+        const attendeesCounts = await Booking.aggregate([
+            {
+              $match: {
+                eventID: mongoose.Types.ObjectId(eventID)
+              }
+            },
+            {
+              $group: {
+                _id: {
+                  $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$bookingDateTime"
+                  }
+                },
+                count: { $count: {} }
+              }
+            },
+            {
+              $project: {
+                date: "$_id",
+                count: "$count"
+              }
+            }
+          ]);
+      
+          res.status(200).json(attendeesCounts);
     }
+    catch(error) {
+        res.status(500).json({ error });
+    }    
 })
+
+router.get('/getTicketTypeCounts/:EventID', auth, async (req, res) => {
+    try {
+      const eventID = req.params.EventID;
+  
+      // Get the count of each ticket type for the event
+      const ticketTypeCounts = await Booking.aggregate([
+        {
+          $match: {
+            eventID: mongoose.Types.ObjectId(eventID)
+          }
+        },
+        {
+          $lookup: {
+            from: 'events',
+            localField: 'eventID',
+            foreignField: '_id',
+            as: 'event'
+          }
+        },
+        {
+          $unwind: '$event'
+        },
+        {
+          $unwind: '$event.tickets'
+        },
+        {
+          $group: {
+            _id: '$event.tickets.ticketType',
+            count: { $count: {} }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            ticketType: '$_id',
+            count: '$count'
+          }
+        }
+      ]);
+  
+      res.status(200).json(ticketTypeCounts);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
 router.get('/getBookingsCount/:EventID', auth, async (req, res) => {
     const EventID = req.params.EventID;
