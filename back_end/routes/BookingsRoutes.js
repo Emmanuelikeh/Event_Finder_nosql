@@ -3,6 +3,7 @@ const auth = require('../middleware/UserAuth');
 const Booking = require('../models/Bookings');
 const Event = require('../models/Events');
 const Venue = require('../models/Venue');
+const mongoose = require('mongoose');
 
 
 router.post('/createBooking', auth, async (req, res) => {
@@ -49,7 +50,7 @@ router.get('/registered/:userID', auth, async (req, res) => {
             }
         })
         
-        console.log(bookings);
+        console.log(bookings); 
         res.json(bookings);
     }
     catch(error) {
@@ -82,35 +83,40 @@ router.delete('/deleteBooking', auth, async (req, res) => {
 router.get('/getAttendees/:EventID', auth, async (req, res) => {
     try {
       const eventID = req.params.EventID;
+      console.log(eventID, "Event ID");
   
       // Get all the bookings for the specified event
-      const bookings = await Booking.find({
+     let bookings = await Booking.find({
         eventID: eventID
-      })
-      .populate('attendeeID', 'username email')
-      .populate('ticketID', 'ticketType');
-  
-      // Extract the attendee and ticket information from the bookings
-      const attendees = bookings.map(booking => ({
-        name: booking.attendeeID.username,
-        email: booking.attendeeID.email,
-        ticketType: booking.ticketID.ticketType
-      }));
-  
-      res.status(200).json(attendees);
+      }).populate('attendeeID', 'username email')
+
+      const event = await Event.findById(eventID)
+
+      // get the ticket type for each booking and the booking data shoudl only have the username, email, ticketype
+        bookings = bookings.map(booking => {
+            const ticket = event.tickets.id(booking.ticketID);
+            return {
+                username: booking.attendeeID.username,
+                email: booking.attendeeID.email,
+                ticketType: ticket.ticketType
+            }
+        })
+
+        console.log("Bookings", bookings);
+        res.status(200).json(bookings);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
 
 router.get('/getAttendeesCount/:EventID', auth, async (req, res) => {
-    const EventID = req.params.EventID;
+    const eventID = req.params.EventID;
     // get date and  count of attendees for an event
     try{
         const attendeesCounts = await Booking.aggregate([
             {
               $match: {
-                eventID: mongoose.Types.ObjectId(eventID)
+                eventID: new mongoose.Types.ObjectId(eventID) 
               }
             },
             {
@@ -131,54 +137,50 @@ router.get('/getAttendeesCount/:EventID', auth, async (req, res) => {
               }
             }
           ]);
-      
-          res.status(200).json(attendeesCounts);
+          // remove the _id field   
+            attendeesCounts.forEach(attendee => {
+                delete attendee._id;
+            });
+          res.status(200).json(attendeesCounts); 
     }
     catch(error) {
         res.status(500).json({ error });
+        console.log(error);
     }    
 })
 
 router.get('/getTicketTypeCounts/:EventID', auth, async (req, res) => {
     try {
-      const eventID = req.params.EventID;
-  
-      // Get the count of each ticket type for the event
-      const ticketTypeCounts = await Booking.aggregate([
-        {
-          $match: {
-            eventID: mongoose.Types.ObjectId(eventID)
-          }
-        },
-        {
-          $lookup: {
-            from: 'events',
-            localField: 'eventID',
-            foreignField: '_id',
-            as: 'event'
-          }
-        },
-        {
-          $unwind: '$event'
-        },
-        {
-          $unwind: '$event.tickets'
-        },
-        {
-          $group: {
-            _id: '$event.tickets.ticketType',
-            count: { $count: {} }
-          }
-        },
-        {
-          $project: {
-            _id: 0,
-            ticketType: '$_id',
-            count: '$count'
-          }
-        }
-      ]);
-  
+      const eventID = req.params.EventID; 
+      // Get the count of each ticket for the event
+      const ticketTypeCounts = await Booking.aggregate(
+        [
+            {
+              $match: {
+                eventID: new mongoose.Types.ObjectId(eventID)
+              }
+            },
+            {
+              $group: {
+                _id: "$ticketID",
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                ticketID: "$_id",
+                count: "$count"
+              }
+            }
+          ]
+      );
+      // find the event and get the ticket type
+        const event = await Event.findById(eventID);
+        const tickets = event.tickets;
+        ticketTypeCounts.forEach(ticket => {
+            const ticketInfo = tickets.id(ticket.ticketID);
+            ticket.ticketType = ticketInfo.ticketType;
+        });
       res.status(200).json(ticketTypeCounts);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -187,11 +189,31 @@ router.get('/getTicketTypeCounts/:EventID', auth, async (req, res) => {
 
 router.get('/getBookingsCount/:EventID', auth, async (req, res) => {
     const EventID = req.params.EventID;
-    try {
-        const bookings = await Booking.getBookingCount(EventID);
-        res.json(bookings);
-    } catch (error) {
+    // count the number of bookings for an event
+    try{
+        const bookingsCount = await Booking.aggregate([
+            {
+              $match: {
+                eventID: new mongoose.Types.ObjectId(EventID)
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                count: "$count"
+              }
+            }
+          ]);
+          res.status(200).json(bookingsCount);
+    }
+    catch(error) {
         res.status(500).json({ error });
+        console.log(error);
     }
 })
 

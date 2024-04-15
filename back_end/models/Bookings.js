@@ -12,7 +12,6 @@ const bookingSchema = new mongoose.Schema({
     },
     ticketID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'tickets',
         required: true
     },
     bookingDateTime: {

@@ -91,7 +91,7 @@ const EventAnalytics = () => {
             <div className="card-body">
               <h5 className="card-title">Attendee Breakdown</h5>
               <BarChart width={500} height={300} data={attendeeData}>
-                <XAxis dataKey="TicketType" />
+                <XAxis dataKey="ticketType" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
@@ -131,11 +131,11 @@ const EventAnalytics = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {attendee.map((data) => (
-                    <tr key={data.BookingID}>
-                      <td>{data.Username}</td>
-                      <td>{data.Email}</td>
-                      <td>{data.TicketType}</td>
+                  {attendee.map((data, index) => (
+                    <tr key={index}>
+                      <td>{data.username}</td>
+                      <td>{data.email}</td>
+                      <td>{data.ticketType}</td>
                     </tr>
                   ))}
                 </tbody>
