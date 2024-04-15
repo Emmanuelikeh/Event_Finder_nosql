@@ -62,18 +62,21 @@ router.delete('/deleteBooking', auth, async (req, res) => {
     try{
         // { bookingID:bookingID, ticketID:ticketID, eventID:eventID}
         const { bookingID, ticketID, eventID } = req.body;
-        console.log(req.body);
+        console.log(req.body, "Here , testing");
         // also need to increment the ticket quantity
         const event = await Event.findById(eventID);
         const ticket = event.tickets.id(ticketID);
         ticket.ticketAvailableQuantity += 1;
         await event.save();
+
+        // delete the booking
+        await Booking.findByIdAndDelete(bookingID);
         res.json({ message: 'Booking deleted successfully' });
     }
     catch(error) {
         res.status(500).json({ error });
+        console.log(error);
     }
-
 })
 
 router.get('/getAttendees/:EventID', auth, async (req, res) => {

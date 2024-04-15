@@ -50,23 +50,29 @@ async function getOrganizerInfo(organizerID) {
 }
 
 
-eventSchema.statics.getAvailableEvents = async function (userID) {
+eventSchema.statics.getAvailableEvents = async function(userID) {
+    // Get all the events the user has already booked
+    const userBookings = await mongoose.model('bookings').find({
+      attendeeID: userID
+    }).distinct('eventID');
+  
     const events = await this.find({
-        eventDate: { $gte: new Date() }
+      eventDate: { $gte: new Date() },
+      _id: { $nin: userBookings } // Exclude the events the user has already booked
     })
-        .populate('venueID')
-        .select('-__v'); // Exclude the __v field from the result
-
+    .populate('venueID')
+    .select('-__v'); // Exclude the __v field from the result
+  
     // Fetch organizer information for each event
     const eventsWithOrganizer = await Promise.all(
-        events.map(async (event) => {
-            const organizer = await getOrganizerInfo(event.organizerID);
-            return { ...event.toObject(), organizer };
-        })
+      events.map(async (event) => {
+        const organizer = await getOrganizerInfo(event.organizerID);
+        return { ...event.toObject(), organizer };
+      })
     );
-
+  
     return eventsWithOrganizer;
-};
+  };
 
 eventSchema.statics.getEventsAndRegistration = async function(userId) {
     const events = await this.find({
