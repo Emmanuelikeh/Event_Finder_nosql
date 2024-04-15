@@ -187,6 +187,48 @@ router.get('/getTicketTypeCounts/:EventID', auth, async (req, res) => {
     }
   });
 
+
+  // get the count of bookings for at most three events for an organizer, should return the event name and the count of bookings
+
+router.get('/getThreeEventsBookings/:organizerID', auth, async (req, res) => {
+    const organizerID = req.params.organizerID;
+    console.log(organizerID, "Organizer ID");
+    try {
+        const events = await Event.getEventsByOrganizer(organizerID);
+        const eventIDs = events.map(event => event._id);
+        const bookings = await Booking.aggregate([
+            {
+              $match: {
+                eventID: { $in: eventIDs }
+              }
+            },
+            {
+              $group: {
+                _id: "$eventID",
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                eventName: "$_id",
+                count: "$count"
+              }
+            }
+          ]);
+          bookings.forEach(booking => {
+              const event = events.find(event => event._id.equals(booking.eventName));
+              booking.eventName = event.eventName;
+          });
+          console.log(bookings);
+          res.status(200).json(bookings);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+}
+)
+
+
+
 router.get('/getBookingsCount/:EventID', auth, async (req, res) => {
     const EventID = req.params.EventID;
     // count the number of bookings for an event

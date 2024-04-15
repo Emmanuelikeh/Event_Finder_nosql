@@ -43,6 +43,61 @@ router.post('/create', auth, async (req, res) => {
 })
 
 
+// get at most three events by and organizer
+router.get('/getThreeEvents/:organizerID', auth, async (req, res) => {
+    const organizerID = req.params.organizerID;
+
+    try {
+        const events = await Event.getEventsByOrganizer(organizerID);
+        // console.log(events.slice(0, 3));
+        res.json(events.slice(0, 3));
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
+// get the total number of events and the tota number of people that have attending a event for a specific organizer
+
+router.get('/getTotalEventsAndAttendees/:organizerID', auth, async (req, res) => {
+    const organizerID = req.params.organizerID;
+    // console.log(organizerID);
+    try {
+        const events = await Event.getEventsByOrganizer(organizerID);
+        const totalEvents = events.length;
+        // get the total number of attendees for all the organizers events
+        const totalAttendees = await Booking.aggregate([
+            {
+              $match: {
+                eventID: { $in: events.map(event => event._id) }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                count: 1
+              }
+            }
+          ]);
+      
+          const totalAttendeesCount = totalAttendees[0]?.count ?? 0;
+
+        //   console.log(totalAttendeesCount, totalEvents);
+          res.json({ totalEvents, totalAttendees: totalAttendeesCount });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
+
+
+
+
 // get all events
 router.get('/getAvailableEvents/:userID', auth, async (req, res) => {
     const userID = req.params.userID;
@@ -90,6 +145,10 @@ router.get('/getIsRegisteredEvents', auth, async (req, res) => {
     }
    
 });
+
+
+
+
 
 
 // get events by organizer
