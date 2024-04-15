@@ -47,15 +47,6 @@ router.post('/signup', async (req, res) => {
     catch (err) {
         res.status(400).json({ error: err });
     }
-
-
-    // const { username, email, password, isorganizer } = req.body;
-    // try {
-    //     await User.signup(username, email, password, isorganizer);
-    //     res.json({ message: 'User created successfully' });
-    // } catch (err) {
-    //     res.status(400).json({ error: err});
-    // }
 })
 
 // get all organizers
