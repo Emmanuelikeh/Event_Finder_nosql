@@ -5,7 +5,6 @@ const venue = require('../models/Venue');
 router.get('/', async (req, res) => {
     try{
         const venues = await venue.find();
-        console.log(venues);
         res.json(venues);
     } catch (error) {
         res.status(500).json({ error });

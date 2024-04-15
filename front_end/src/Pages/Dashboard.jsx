@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,23 +7,12 @@ import 'chart.js/auto';
 const OrganizationDashboard = () => {
   // Example data for organization's events and analytics
 
-  const[totalEvents, setTotalEvents] = useState(0);
-  const[totalAttendees, setTotalAttendees] = useState(0);
+  const [totalEvents, setTotalEvents] = useState(0);
+  const [totalAttendees, setTotalAttendees] = useState(0);
   const [data, setData] = useState([]);
   const organizationName = 'Computer Science Club';
 
   const [events, setEvents] = useState([]);
-  // const totalEvents = 3;
-  // const totalAttendees = 120;
-  // const events = [
-  //   { id: 1, name: 'Interview Prep', attendees: 40 },
-  //   { id: 2, name: 'Hackathon', attendees: 60 },
-  //   { id: 3, name: 'Resume Review', attendees: 20 }
-  // ];
-
-
-  // Data for the attendance chart
-
   useEffect(() => {
     // Fetch organization's events and analytics data
     // get userfrom  local storage
@@ -34,11 +23,11 @@ const OrganizationDashboard = () => {
 
 
     fetch(`http://localhost:5001/api/events/getTotalEventsAndAttendees/${organizerID}`
-    , {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    })
+      , {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
       .then(response => response.json())
       .then(data => {
         console.log(data);
@@ -53,15 +42,15 @@ const OrganizationDashboard = () => {
       });
 
 
-      // /getThreeEvents/:organizerID
+    // /getThreeEvents/:organizerID
 
 
     fetch(`http://localhost:5001/api/events/getThreeEvents/${organizerID}`
-    , {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    })
+      , {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
       .then(response => response.json())
       .then(data => {
         console.log(data);
@@ -74,8 +63,8 @@ const OrganizationDashboard = () => {
       });
 
 
-      // /getThreeEventsBookings/:organizerID
-      fetch(`http://localhost:5001/api/bookings/getThreeEventsBookings/${organizerID}`,
+    // /getThreeEventsBookings/:organizerID
+    fetch(`http://localhost:5001/api/bookings/getThreeEventsBookings/${organizerID}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -91,7 +80,7 @@ const OrganizationDashboard = () => {
       });
 
   }
-  , []);
+    , []);
 
   const chartData = {
     labels: data.map(d => d.eventName),
@@ -103,7 +92,7 @@ const OrganizationDashboard = () => {
         borderWidth: 1,
         hoverBackgroundColor: 'rgba(54, 162, 235, 0.8)',
         hoverBorderColor: 'rgba(54, 162, 235, 1)',
-        data:data.map(d => d.count),
+        data: data.map(d => d.count),
       }
     ]
   };
@@ -113,7 +102,7 @@ const OrganizationDashboard = () => {
 
 
 
-  
+
 
   return (
     <div className="container mt-4">
@@ -134,7 +123,11 @@ const OrganizationDashboard = () => {
             <div className="card">
               <div className="card-body">
                 <h5 className="card-title">{event.eventName}</h5>
-                <p className="card-text">Attendees: {data[index].count}</p>
+                {data && data[index] ? (
+                  <p className="card-text">Attendees: {data[index].count}</p>
+                ) : (
+                  <p className="card-text">Loading...</p>
+                )}
                 <Link to={`/organization/analytics/${event.id}`} className="btn btn-primary">
                   View Event Analytics
                 </Link>

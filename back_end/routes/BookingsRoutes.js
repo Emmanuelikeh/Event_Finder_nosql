@@ -25,13 +25,11 @@ router.post('/createBooking', auth, async (req, res) => {
         // res.json({ message: 'Booking created successfully' });
     }catch(error) {
         res.status(500).json({ error });
-        console.log(error);
     }
 })
 
 router.get('/registered/:userID', auth, async (req, res) => {
     const userID = req.params.userID;
-    console.log("User ID is", userID);
     try{
         let bookings = await Booking.find({ attendeeID: userID }).populate('eventID');
         // GET THE VENUE INFO
@@ -49,8 +47,6 @@ router.get('/registered/:userID', auth, async (req, res) => {
                 ticketID: booking.ticketID
             }
         })
-        
-        console.log(bookings); 
         res.json(bookings);
     }
     catch(error) {
@@ -63,7 +59,6 @@ router.delete('/deleteBooking', auth, async (req, res) => {
     try{
         // { bookingID:bookingID, ticketID:ticketID, eventID:eventID}
         const { bookingID, ticketID, eventID } = req.body;
-        console.log(req.body, "Here , testing");
         // also need to increment the ticket quantity
         const event = await Event.findById(eventID);
         const ticket = event.tickets.id(ticketID);
@@ -76,14 +71,12 @@ router.delete('/deleteBooking', auth, async (req, res) => {
     }
     catch(error) {
         res.status(500).json({ error });
-        console.log(error);
     }
 })
 
 router.get('/getAttendees/:EventID', auth, async (req, res) => {
     try {
       const eventID = req.params.EventID;
-      console.log(eventID, "Event ID");
   
       // Get all the bookings for the specified event
      let bookings = await Booking.find({
@@ -101,8 +94,6 @@ router.get('/getAttendees/:EventID', auth, async (req, res) => {
                 ticketType: ticket.ticketType
             }
         })
-
-        console.log("Bookings", bookings);
         res.status(200).json(bookings);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -145,7 +136,6 @@ router.get('/getAttendeesCount/:EventID', auth, async (req, res) => {
     }
     catch(error) {
         res.status(500).json({ error });
-        console.log(error);
     }    
 })
 
@@ -192,7 +182,7 @@ router.get('/getTicketTypeCounts/:EventID', auth, async (req, res) => {
 
 router.get('/getThreeEventsBookings/:organizerID', auth, async (req, res) => {
     const organizerID = req.params.organizerID;
-    console.log(organizerID, "Organizer ID");
+console.log(organizerID, "Organizer ID");
     try {
         const events = await Event.getEventsByOrganizer(organizerID);
         const eventIDs = events.map(event => event._id);
@@ -219,7 +209,7 @@ router.get('/getThreeEventsBookings/:organizerID', auth, async (req, res) => {
               const event = events.find(event => event._id.equals(booking.eventName));
               booking.eventName = event.eventName;
           });
-          console.log(bookings);
+console.log(bookings);
           res.status(200).json(bookings);
     } catch (error) {
         res.status(500).json({ error });
@@ -255,7 +245,6 @@ router.get('/getBookingsCount/:EventID', auth, async (req, res) => {
     }
     catch(error) {
         res.status(500).json({ error });
-        console.log(error);
     }
 })
 
