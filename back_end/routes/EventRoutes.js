@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Event = require('../models/Events');
+const Booking = require('../models/Bookings');
 const auth = require('../middleware/UserAuth');
 
 router.post('/create', auth, async (req, res) => {
@@ -17,7 +18,7 @@ router.post('/create', auth, async (req, res) => {
             delete ticket.error;
             return ticket;
         });
-       
+
         // modify the json key to match the schema
         ticketOptions = ticketOptions.map(ticket => {
             ticket.ticketType = ticket.name;
@@ -29,10 +30,10 @@ router.post('/create', auth, async (req, res) => {
             delete ticket.price;
             delete ticket.quantity;
             return ticket;
-        }); 
+        });
 
         console.log("Ticket options are", ticketOptions);
-        const event = new Event({ eventName, eventDescription, eventDate, eventStartTime, eventEndTime, venueID:venueId, organizerID, tickets: ticketOptions });
+        const event = new Event({ eventName, eventDescription, eventDate, eventStartTime, eventEndTime, venueID: venueId, organizerID, tickets: ticketOptions });
         await event.save();
         res.json({ message: 'Event created successfully' });
     } catch (error) {
@@ -46,9 +47,7 @@ router.post('/create', auth, async (req, res) => {
 router.get('/getAvailableEvents/:userID', auth, async (req, res) => {
     const userID = req.params.userID;
     try {
-        console.log("Get all events");
         const events = await Event.getAvailableEvents(userID);
-        console.log(events);
         res.json(events);
     } catch (error) {
         res.status(500).json({ error });
@@ -56,23 +55,47 @@ router.get('/getAvailableEvents/:userID', auth, async (req, res) => {
 })
 
 // get all events and return a new  value isregistered if the user has registered for the event
-router.get('/getIsRegisteredEvents/:userID', auth, async (req, res) => {
-    const userID = req.params.userID;
-    console.log("User ID is", userID);
+router.get('/getIsRegisteredEvents', auth, async (req, res) => {
     try {
-        console.log("Get all events");
-        const events = await Event.getEventsAndCheckIfRegistered(userID);
-        res.json(events);
-    } catch (error) {
+        const userID = req.query.userID;
+        const orgID = req.query.orgID;
+
+        console.log(userID, orgID);
+
+        const events = await Event.find({
+            organizerID: orgID,
+            eventDate: { $gte: new Date() },
+          })
+            .populate('venueID')
+            .populate({
+                path: 'organizerID',
+                select: 'username email _id',
+              });
+        const eventsWithRegistration = await Promise.all(
+            events.map(async (event) => {
+                const booking = await Booking.findOne({
+                eventID: event._id,
+                attendeeID: userID,
+                });
+                return {
+                ...event.toObject(),
+                isRegistered: !!booking,
+                };
+            })
+            );
+        res.status(200).json(eventsWithRegistration);
+    }
+    catch (error) {
         res.status(500).json({ error });
     }
+   
 });
 
 
 // get events by organizer
 router.get('/getevents/:userID', auth, async (req, res) => {
     const OrganizerID = req.params.userID;
-    try{
+    try {
         // get all evenst by the organizer including the infomation of the venue 
         const events = await Event.getEventsByOrganizer(OrganizerID);
         console.log(events);
@@ -106,22 +129,12 @@ router.get('/date/:date', auth, async (req, res) => {
     }
 })
 
-// get registerd events by user
-// router.get('/registered/:userID', auth, async (req, res) => {
-//     const userID = req.params.userID;
-//     console.log("User ID is", userID);
-//     try {
-//         const events = await Event.getAllRegisteredEvents(userID);
-//         res.json(events);
-//     } catch (error) {
-//         res.status(500).json({ error });
-//     }
-// })
+
 
 // update events
 router.put('/:eventID', auth, async (req, res) => {
     const event_id = req.params.EventID;
-    const {EventDesciption, EventDate, StartTime, EndTime, VenueID, OrganizerID } = req.body;
+    const { EventDesciption, EventDate, StartTime, EndTime, VenueID, OrganizerID } = req.body;
     try {
         await Event.updateEvent(event_id, EventDesciption, EventDate, StartTime, EndTime, VenueID, OrganizerID);
         res.json({ message: 'Event updated successfully' });

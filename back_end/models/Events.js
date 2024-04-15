@@ -28,7 +28,7 @@ const eventSchema = new mongoose.Schema({
     },
     organizerID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'User',
         required: true
     },
     tickets: [{
@@ -67,6 +67,30 @@ eventSchema.statics.getAvailableEvents = async function (userID) {
 
     return eventsWithOrganizer;
 };
+
+eventSchema.statics.getEventsAndRegistration = async function(userId) {
+    const events = await this.find({
+      eventDate: { $gte: new Date() }
+    })
+    .populate('venueID')
+    .populate('organizerID');
+  
+    // Check if the user has booked for each event
+    const eventsWithRegistration = await Promise.all(
+      events.map(async (event) => {
+        const booking = await mongoose.model('Booking').findOne({
+          eventID: event._id,
+          attendeeID: userId
+        });
+        return {
+          ...event.toObject(),
+          isRegistered: !!booking
+        };
+      })
+    );
+  
+    return eventsWithRegistration;
+  };
 
 
 

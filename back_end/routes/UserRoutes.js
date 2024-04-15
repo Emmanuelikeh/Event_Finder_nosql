@@ -63,6 +63,7 @@ router.get('/organizers', auth, async (req, res) => {
     console.log("Get all organizers");
     try {
         const organizers = await User.findOrganizers();
+        console.log(organizers);
         res.json(organizers);
     } catch (error) {
         res.status(500).json({ error });
