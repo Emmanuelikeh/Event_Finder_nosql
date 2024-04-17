@@ -61,6 +61,13 @@ const MyEvents = () => {
     }
   };
 
+  const formatDate = (date) => {
+  
+    // returns a string 
+    return new Date(date).toLocaleDateString();
+
+  }
+
   return (
     <div className="container mt-4">
       <h1 className="mb-4">My Events</h1>
@@ -70,7 +77,7 @@ const MyEvents = () => {
             <div className="card h-100">
               <div className="card-body">
                 <h5 className="card-title">{event.eventID.eventName}</h5>
-                <p className="card-text">Date: {event.eventID.eventDate}</p>
+                <p className="card-text">Date: {formatDate(event.eventID.eventDate)}</p>
                 <p className="card-text">Location: {event.venueInfo.venueLocation}</p>
                 <p className="card-text">Capacity: {event.venueInfo.venueCapacity}</p>
                 <button className="btn btn-danger btn-block w-100" onClick={() => handleCancelRSVP(event.bookingID, event.ticketID, event.eventID._id)}>

@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 const EventAnalytics = () => {
 
   const location = useLocation();
-  const { EventID, EventName, EventDescription, EventDate, StartTime, EndTime, VenueName, Location, Capacity } = location.state;
+  const { EventID, EventName, EventDate,Location, Capacity } = location.state;
   const [attendee, setAttendee] = useState([]);
   const [signupData, setSignupData] = useState([]);
   const [attendeeData, setAttendeeData] = useState([]);
@@ -73,6 +73,10 @@ const EventAnalytics = () => {
 
   }, [EventID]);
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString();
+  }
+
   return (
     <div className="container mt-4">
       <h1 className="text-center mb-4">Event Analytics</h1>
@@ -81,7 +85,7 @@ const EventAnalytics = () => {
           <div className="card mb-4">
             <div className="card-body">
               <h5 className="card-title">Event: {EventName}</h5>
-              <p className="card-text">Date: {EventDate}</p>
+              <p className="card-text">Date: {formatDate(EventDate)}</p>
               <p className="card-text">Location: {Location}</p>
               <p className="card-text">Capacity: {Capacity}</p>
               <p className="card-text">Total Attendees: {totalAttendees}</p>

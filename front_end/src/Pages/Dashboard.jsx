@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,7 +11,10 @@ const OrganizationDashboard = () => {
   const [totalEvents, setTotalEvents] = useState(0);
   const [totalAttendees, setTotalAttendees] = useState(0);
   const [data, setData] = useState([]);
-  const organizationName = 'Computer Science Club';
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const organizationName = user.username;
 
   const [events, setEvents] = useState([]);
   useEffect(() => {
@@ -97,7 +101,11 @@ const OrganizationDashboard = () => {
     ]
   };
 
-  console.log(chartData)
+  const handleEventAnalytics = (EventID, EventName, EventDate, Location, Capacity) => {
+    // Redirect to the event analytics page
+    // const { EventID, EventName,EventDate Location, Capacity }
+    navigate('/our-event/event-analytics', { state: {EventID,EventName, EventDate, Location, Capacity} });
+  }
 
 
 
@@ -111,9 +119,6 @@ const OrganizationDashboard = () => {
         <div className="card-body">
           <h5 className="card-title">Total Events: {totalEvents}</h5>
           <p className="card-text">Total Attendees: {totalAttendees}</p>
-          <Link to="/organization/analytics" className="btn btn-primary">
-            View Total Event Analytics
-          </Link>
         </div>
       </div>
       <h2 className="mt-4">Individual Event Analytics</h2>
@@ -128,9 +133,7 @@ const OrganizationDashboard = () => {
                 ) : (
                   <p className="card-text">Loading...</p>
                 )}
-                <Link to={`/organization/analytics/${event.id}`} className="btn btn-primary">
-                  View Event Analytics
-                </Link>
+                <button className='btn btn-primary' onClick={() => handleEventAnalytics(event._id, event.eventName, event.eventDate, event.venueID.venueLocation, event.venueID.venueCapacity)}>View Analytics</button>
               </div>
             </div>
           </div>

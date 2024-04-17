@@ -1,6 +1,9 @@
 const router = require('express').Router();
-const User = require('../models/User');
 const auth = require('../middleware/UserAuth');
+const User = require('../models/User');
+
+
+
 
 router.post('/login', async (req, res) => {
 
@@ -25,7 +28,6 @@ router.post('/login', async (req, res) => {
 router.post('/signup', async (req, res) => {
     try {
         let { username, email, password, isorganizer } = req.body;
-        console.log(username, email, password, isorganizer);
         if(isorganizer === 'organizer') {
             isorganizer = true;
         }
@@ -34,12 +36,15 @@ router.post('/signup', async (req, res) => {
         }
         console.log(email, password, isorganizer);
         const existingUser = await User.findOne({ email });
+        console.log(existingUser);
 
         if (existingUser) {
            return res.status(400).json({ error: 'User already exists' });
+           console.log("User already exists");
         }
 
         const user = new User({ username, email, password, isorganizer });
+        console.log(user);
         await user.save();
         console.log("User created successfully");
         res.json({ message: 'User created successfully' });

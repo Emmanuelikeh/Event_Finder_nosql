@@ -43,6 +43,24 @@ router.post('/create', auth, async (req, res) => {
 })
 
 
+router.put('/updateEvents', auth, async (req, res) => {
+    let {EventID, EventName, EventDescription, EventDate, StartTime, EndTime } = req.body;
+    console.log(EventID, EventName, EventDescription, EventDate, StartTime, EndTime);
+
+    EventDate = new Date(EventDate);
+    StartTime = new Date(`${EventDate.toDateString()} ${StartTime}`);
+    EndTime = new Date(`${EventDate.toDateString()} ${EndTime}`);
+
+    // update the event documnet with the new values
+    try {
+        await Event.findByIdAndUpdate(EventID, { eventName: EventName, eventDescription: EventDescription, eventDate: EventDate, eventStartTime: StartTime, eventEndTime: EndTime });
+        res.json({ message: 'Event updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
+
 // get at most three events by and organizer
 router.get('/getThreeEvents/:organizerID', auth, async (req, res) => {
     const organizerID = req.params.organizerID;
@@ -56,7 +74,7 @@ router.get('/getThreeEvents/:organizerID', auth, async (req, res) => {
     }
 })
 
-// get the total number of events and the tota number of people that have attending a event for a specific organizer
+// get the total number of events and the total number of people that have attending a event for a specific organizer
 
 router.get('/getTotalEventsAndAttendees/:organizerID', auth, async (req, res) => {
     const organizerID = req.params.organizerID;
@@ -148,9 +166,6 @@ router.get('/getIsRegisteredEvents', auth, async (req, res) => {
 
 
 
-
-
-
 // get events by organizer
 router.get('/getevents/:userID', auth, async (req, res) => {
     const OrganizerID = req.params.userID;
@@ -184,6 +199,21 @@ router.get('/date/:date', auth, async (req, res) => {
         const events = await Event.getEventsByDate(date);
         res.json(events);
     } catch (error) {
+        res.status(500).json({ error });
+    }
+})
+
+
+// get events by id
+router.get('/getEvent/:eventID', auth, async (req, res) => {
+    const eventID = req.params.eventID;
+    // get event by id
+    try{
+        const event = await Event.findById(eventID).populate('venueID').populate('organizerID');
+        console.log(event);
+        res.json(event);
+    }
+    catch (error) {
         res.status(500).json({ error });
     }
 })

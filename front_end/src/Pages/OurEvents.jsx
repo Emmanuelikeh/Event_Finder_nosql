@@ -62,7 +62,7 @@ const OurEvents = () => {
   };
   const handleEditEvent = (eventId) => {
     // Handle editing event logic here
-    console.log(`Edit event with ID ${eventId}`);
+    navigate(`/edit-event/${eventId}`);
   };
 
   const handleDeleteEvent = (eventId) => {
@@ -116,15 +116,8 @@ const OurEvents = () => {
                   >
                     Edit
                   </button>
-                  <button
-                    className="btn btn-danger mx-2"
-                    style={{ flex: "1" }}
-                    onClick={() => handleDeleteEvent(event._id)}
-                  >
-                    Delete
-                  </button>
                   {/* // const {EventID, EventName, EventDescription, EventDate, StartTime, EndTime, VenueName, Location , Capacity  } */}
-                  <button onClick={() => handleViewAnalytics(event._id, event.eventName, event.eventDescription, event.eventDate, event.eventStartTime, event.eventEndTime, event.venueID.venueName, event.venueID.venueLocation, event.venueID.venueCapacity)}>
+                  <button className="btn btn-success mx-2"onClick={() => handleViewAnalytics(event._id, event.eventName, event.eventDescription, event.eventDate, event.eventStartTime, event.eventEndTime, event.venueID.venueName, event.venueID.venueLocation, event.venueID.venueCapacity)}>
                     View Analytics
                   </button>
 
